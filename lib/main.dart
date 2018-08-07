@@ -26,7 +26,7 @@ class _YimeState extends State<Yime> {
     return MaterialApp(
       title: 'Yime',
       routes: {
-        '/bottomnav': (context) => BottomNavigation()
+        '/bottomnav': (context) => BottomNavigation(),
       },
       home: IntroPage(),
     );

@@ -25,7 +25,7 @@ class _IntroPageState extends State<IntroPage> {
 
   @override
   Widget build(BuildContext context) {
-    //maybe add a quick animation or icon?
+    //showing a little splash screen
     return Scaffold(
         body: Stack(
       fit: StackFit.expand,
