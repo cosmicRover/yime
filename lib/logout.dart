@@ -18,7 +18,7 @@ class _LogOutState extends State<LogOut> {
   void initState() {
     super.initState();
     //delaying for 2 seconds and initiating deleteAcToken() method
-    Timer(Duration(seconds: 2), () => deleteAcToken());
+    Timer(Duration(seconds: 1), () => deleteAcToken());
   }
 
   @override

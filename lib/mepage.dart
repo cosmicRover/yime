@@ -20,7 +20,7 @@ class MeState extends State<Me> {
   static String accessToken;
   static String authCode;
 
-  static const _serviceUrl = 'https://yime.herokuapp.com/api/available';
+  static const _serviceUrl = 'https://yime.herokuapp.com/api/friend';//schedule, friend and me(coming soon)
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'
@@ -142,7 +142,7 @@ class MeState extends State<Me> {
     }
   }
 
-  Future<Null> checkUser() async {
+  Future<dynamic> checkUser() async {
     //calling shared pref plugin and getString()
     SharedPreferences prefs = await SharedPreferences.getInstance();
     accessToken = prefs.getString("accesstoken");
@@ -151,5 +151,6 @@ class MeState extends State<Me> {
         accessToken; //adding bearer to accesscode for security reason
     print(authCode);
     getInfo(); //calling the http.get function
+    return LinearProgressIndicator();
   }
 }

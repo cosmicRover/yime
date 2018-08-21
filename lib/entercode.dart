@@ -37,14 +37,14 @@ class _EnterCodeState extends State<EnterCode> {
       newCodeLogin.token = globalToken;
       var codeLogin = EnterCodeLoginService();
       codeLogin.createCodeLogin(newCodeLogin).then((value) {
-        if (value.length == 173) {
+        if (value == "error" || value == null) {
+          showErrMessage('There is a problem, please review');
+        } else {
           saveKey.savedTokenPreference(value).then((onValue) {
             //saving key and pushing to a new screen with no back
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/bottomnav', (Route<dynamic> route) => false);
           });
-        } else {
-          //will think of something
         }
       });
       //navigate to bottom navigation

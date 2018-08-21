@@ -38,14 +38,14 @@ class _SignUpState extends State<SignUp> {
       print(newSignup.token);
       var signup = SignUpService();
       signup.createSignUp(newSignup).then((value) {
-        if (value.length == 173) {
+        if (value == "error" || value == null) {
+          showErrMessage('Name has to be at least 3 letters, enter correct code!');
+        } else {
           saveKey.savedTokenPreference(value).then((onValue) {
             //saving key and pushing to a new screen with no back
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/bottomnav', (Route<dynamic> route) => false);
           });
-        } else {
-          //will think of something
         }
       });
       //navigate to bottom navigation
@@ -99,8 +99,10 @@ class _SignUpState extends State<SignUp> {
                             labelText: 'Name',
                           ),
                           keyboardType: TextInputType.text,
-                          validator: (name) =>
-                              name.isEmpty ? 'Name is required' : null,
+                          validator: (name){
+                            name.isEmpty ? 'Name is required' : null;
+                          },
+
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(16),
                           ],
