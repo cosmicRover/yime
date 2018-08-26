@@ -20,7 +20,7 @@ class MeState extends State<Me> {
   static String accessToken;
   static String authCode;
 
-  static const _serviceUrl = 'https://yime.herokuapp.com/api/friend';//schedule, friend and me(coming soon)
+  static const _serviceUrl = 'https://yime.herokuapp.com/api/friend';//schedule, available, friend and me(coming soon)
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'

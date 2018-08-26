@@ -11,7 +11,6 @@ LogInDetails newLogin = LogInDetails(); //creating a handler for LogInDetails()
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
-
 }
 
 class _LoginState extends State<Login> {
@@ -77,7 +76,7 @@ class _LoginState extends State<Login> {
                       labelText: 'Phone number',
                     ),
                     keyboardType: TextInputType.number,
-                    validator: (val){
+                    validator: (val) {
                       val.isEmpty ? 'Phone number is required' : null;
                     },
                     inputFormatters: [
@@ -91,7 +90,10 @@ class _LoginState extends State<Login> {
                       padding: const EdgeInsets.all(15.0),
                       child: FlatButton.icon(
                           onPressed: _submitForm,
-                          icon: Icon(Icons.send, color: Colors.yellow[700],),
+                          icon: Icon(
+                            Icons.send,
+                            color: Colors.yellow[700],
+                          ),
                           label: Text("Login")),
                     ),
                   )

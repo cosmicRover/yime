@@ -17,7 +17,7 @@ class BottomNavigation extends StatefulWidget {
 class BottomNavigationState extends State<BottomNavigation> {
   //setting up variables and class handlers for functions from other dart files
   //currentTab determines at what icon the app starts with, 0 being home
-  int currentTab = 0;
+  int currentTab = 1;
   //home, prices, maps, rules, events are classes from other dart files
   Me one;
   FreeNow two;
@@ -37,7 +37,7 @@ class BottomNavigationState extends State<BottomNavigation> {
     //list pages will take the above values as arguments
     pages = [one, two, three];
     //current page is set to one so that app starts from home
-    currentPage = one;
+    currentPage = two;
     //loadKey.getTokenPreference().then(upDateKey);//loading the accesskey from disk
     super.initState();
   }
