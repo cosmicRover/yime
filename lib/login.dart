@@ -76,8 +76,8 @@ class _LoginState extends State<Login> {
                       labelText: 'Phone number',
                     ),
                     keyboardType: TextInputType.number,
-                    validator: (val) {
-                      val.isEmpty ? 'Phone number is required' : null;
+                    validator: (value) {
+                      value.isEmpty ? 'Phone number is required' : null;
                     },
                     inputFormatters: [
                       //WhitelistingTextInputFormatter(new RegExp(r'^[()\d -]{1,15}$')),

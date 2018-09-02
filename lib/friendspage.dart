@@ -55,6 +55,7 @@ class FriendsState extends State<Friends> {
     }
   }
 
+  var addedFriends=false;
 //creating a list of users with three values retrieved from api
   List<User> createUserList(List data) {
     List<User> list = List();
@@ -69,6 +70,13 @@ class FriendsState extends State<Friends> {
       //if admin, add user to the list
       list.add(user);
       //}
+    }
+    if (addedFriends == false) {
+      addedFriends = true;
+      setState(() {
+        totalFriends = list.length;
+        print("set called");
+      });
     }
     return list;
   }
@@ -138,16 +146,5 @@ class FriendsState extends State<Friends> {
         ),
       ),
     );
-  }
-
-  //setting the value for var totalFriends
-  @override
-  void initState() {
-    super.initState();
-    fetchUsersFromGitHub().then((onValue) {//awaits for function then
-      setState(() {
-        totalFriends = onValue.length;
-      });
-    });
   }
 }

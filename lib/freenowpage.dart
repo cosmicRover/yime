@@ -24,7 +24,7 @@ class User {
 class FreeNowState extends State<FreeNow> {
   static String accessToken;
   static String authCode;
-  int onlineFriends = 0;
+  var onlineFriends = 0;
 
   static const _serviceUrl =
       'https://yime.herokuapp.com/api/available'; //schedule, available, friend and me(coming soon)
@@ -55,6 +55,7 @@ class FreeNowState extends State<FreeNow> {
     }
   }
 
+  var addedOnline = false;
 //creating a list of users with three values retrieved from api
   List<User> createUserList(List data) {
     List<User> list = List();
@@ -69,6 +70,13 @@ class FreeNowState extends State<FreeNow> {
       //if admin, add user to the list
       list.add(user);
       //}
+    }
+    if (addedOnline == false) {
+      addedOnline = true;
+      setState(() {
+        onlineFriends = list.length;
+        print("set called");
+      });
     }
     return list;
   }
@@ -138,17 +146,5 @@ class FreeNowState extends State<FreeNow> {
         ),
       ),
     );
-  }
-
-//setting the value for onlineFriends
-  @override
-  void initState() {
-    super.initState();
-    fetchUsersFromGitHub().then((onValue) {
-      //awaits for function then
-      setState(() {
-        onlineFriends = onValue.length;
-      });
-    });
   }
 }

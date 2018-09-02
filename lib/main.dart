@@ -7,6 +7,7 @@ import './pages/entercode.dart';
 import './pages/signup.dart';
 import './pages/submitlog.dart';
 import './pages/intropage.dart';
+import './pages/schedule.dart';
 
 
 import 'package:flutter/material.dart';
