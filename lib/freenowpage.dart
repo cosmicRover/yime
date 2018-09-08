@@ -47,6 +47,10 @@ class FreeNowState extends State<FreeNow> {
       List responseJson = c["available"];
       print("data retrieved");
       List<User> userList = createUserList(responseJson);
+      //built in sorting algorithm on dart
+      userList.sort((a,b){
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
       return userList;
     } catch (e) {
       print('Server Exception!!! on getinfo ');
@@ -133,10 +137,13 @@ class FreeNowState extends State<FreeNow> {
                             });
                       } else if (snapshot.hasError) {
                         //if the snapshot has error
-                        return new Text("${snapshot.error}");
+                        return Text("${snapshot.error}");
                       }
                       // By default, show a linear progress indicator
-                      return new LinearProgressIndicator();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: LinearProgressIndicator(),
+                      );
                     },
                   ),
                 ),

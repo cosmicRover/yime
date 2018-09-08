@@ -46,7 +46,13 @@ class FriendsState extends State<Friends> {
           await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
       var c = jsonDecode(response.body);
       List responseJson = c["friends"];
+      print("data retrieved");
       List<User> userList = createUserList(responseJson);
+      //dart sorting algorithm for userList
+      //a and b points to two points in which to compare to
+      userList.sort((a,b){
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
       return userList;
     } catch (e) {
       print('Server Exception!!! on getinfo ');
@@ -55,22 +61,19 @@ class FriendsState extends State<Friends> {
     }
   }
 
-  var addedFriends=false;
+  var addedFriends = false;
 //creating a list of users with three values retrieved from api
   List<User> createUserList(List data) {
     List<User> list = List();
+    list.sort();
     for (int i = 0; i < data.length; i++) {
       String title = data[i]["name"];
       String status = data[i]["status"];
       int id = data[i]["id"];
-      //bool admin = data[i]["site_admin"];
-      //checking to see if an user is admin. Same process goes for online status
-      //if(admin == true){
       User user = User(name: title, id: id, status: status);
-      //if admin, add user to the list
       list.add(user);
-      //}
     }
+
     if (addedFriends == false) {
       addedFriends = true;
       setState(() {
@@ -83,6 +86,31 @@ class FriendsState extends State<Friends> {
 
   @override
   Widget build(BuildContext context) {
+    //custom widget for list tile which allows if statements
+    Widget buildList(String x, y, z) {
+      if (x == 'available') {
+        return ListTile(
+          leading: Icon(
+            Icons.check_circle,
+            color: Colors.green,
+          ),
+          title: Text(y),
+          subtitle: Text(z),
+          onTap: () => print("pressed"),
+        );
+      } else {
+        return ListTile(
+          leading: Icon(
+            Icons.person,
+            color: Colors.yellow[700],
+          ),
+          title: Text(y),
+          subtitle: Text(z),
+          onTap: () => print("pressed-else"),
+        );
+      }
+    }
+
     return new Material(
       child: Theme(
         data: ThemeData(
@@ -112,31 +140,28 @@ class FriendsState extends State<Friends> {
                       //builder takes context and snapshot
                       if (snapshot.hasData) {
                         //if the snapshot contains data
-                        return new ListView.builder(
+                        return ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               return Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.person,
-                                        color: Colors.yellow[700],
-                                      ),
-                                      title: Text(snapshot.data[index].name),
-                                      subtitle: Text(
-                                          snapshot.data[index].id.toString()),
-                                      onTap: () => print("pressed"),
-                                    ),
+                                    buildList(
+                                        snapshot.data[index].status,
+                                        snapshot.data[index].name,
+                                        snapshot.data[index].id.toString()),
                                     //Divider()
                                   ]);
                             });
                       } else if (snapshot.hasError) {
                         //if the snapshot has error
-                        return new Text("${snapshot.error}");
+                        return Text("${snapshot.error}");
                       }
                       // By default, show a linear progress indicator
-                      return new LinearProgressIndicator();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: LinearProgressIndicator(),
+                      );
                     },
                   ),
                 ),
