@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import './friendrequest.dart';
+
 //In this page, I'm attempting to retrieve all the friends that are online
 class Friends extends StatefulWidget {
   @override
@@ -120,6 +122,16 @@ class FriendsState extends State<Friends> {
         child: Scaffold(
           appBar: AppBar(
             title: Text("Yime"),
+            actions: <Widget>[
+              FlatButton.icon(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FriendRequest())),
+                  icon: Icon(Icons.person_add),
+                  label: Text(
+                    "Add freinds",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ))
+            ],
           ),
           body: Stack(
             children: <Widget>[
@@ -155,7 +167,25 @@ class FriendsState extends State<Friends> {
                             });
                       } else if (snapshot.hasError) {
                         //if the snapshot has error
-                        return Text("${snapshot.error}");
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("Are you connected to the internet?",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28.0
+                                ),
+                              ),
+                            ),
+                            FlatButton.icon(
+                                onPressed: fetchUsersFromGitHub,
+                                icon: Icon(Icons.refresh),
+                                label: Text("Tap to refresh")
+                            )
+                          ],
+                        );
                       }
                       // By default, show a linear progress indicator
                       return Padding(

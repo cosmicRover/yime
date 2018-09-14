@@ -29,7 +29,7 @@ class _EnterCodeState extends State<EnterCode> {
     final FormState form = _formKey.currentState;
 
     if (!form.validate()) {
-      showErrMessage('Form is not valid!  Please review and correct.');
+      showErrMessage('Incorrect code, please review.');
     } else {
       form.save();
       //var signUpService = SignUpService();
@@ -37,8 +37,8 @@ class _EnterCodeState extends State<EnterCode> {
       newCodeLogin.token = globalToken;
       var codeLogin = EnterCodeLoginService();
       codeLogin.createCodeLogin(newCodeLogin).then((value) {
-        if (value == "error" || value == null) {
-          showErrMessage('There is a problem, please review');
+        if (value == "error" || value == null || value == 'failed') {
+          showErrMessage('Error! Please retry');
         } else {
           saveKey.savedTokenPreference(value).then((onValue) {
             //saving key and pushing to a new screen with no back
@@ -84,8 +84,9 @@ class _EnterCodeState extends State<EnterCode> {
                             labelText: 'Code',
                           ),
                           keyboardType: TextInputType.number,
-                          validator: (num) =>
-                              num.isEmpty ? 'Code is required' : null,
+                          validator: (num) => num.length < 6
+                              ? '6 digit Code is required'
+                              : null,
                           inputFormatters: [
                             //WhitelistingTextInputFormatter(new RegExp(r'^[()\d -]{1,15}$')),
                             LengthLimitingTextInputFormatter(6),

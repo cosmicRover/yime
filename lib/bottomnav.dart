@@ -46,7 +46,9 @@ class BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     return Material(
       child: Theme(
-        data: ThemeData(splashColor: Colors.yellow),
+        data: ThemeData(
+            splashColor: Colors.red,
+        ),
         child: Scaffold(
           body: currentPage,
           bottomNavigationBar: BottomNavigationBar(
@@ -62,7 +64,7 @@ class BottomNavigationState extends State<BottomNavigation> {
                 BottomNavigationBarItem(
                     icon: Icon(
                       Icons.person,
-                      color: Colors.yellow[700],
+                      color: Colors.yellow[900],
                     ),
                     title: Text(
                       "Me",
@@ -71,7 +73,7 @@ class BottomNavigationState extends State<BottomNavigation> {
                 BottomNavigationBarItem(
                     icon: Icon(
                       Icons.free_breakfast,
-                      color: Colors.yellow[700],
+                      color: Colors.yellow[900],
                     ),
                     title: Text(
                       "Free now",
@@ -80,7 +82,7 @@ class BottomNavigationState extends State<BottomNavigation> {
                 BottomNavigationBarItem(
                     icon: Icon(
                       Icons.people,
-                      color: Colors.yellow[700],
+                      color: Colors.yellow[900],
                     ),
                     title: Text(
                       "Friends",

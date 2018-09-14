@@ -27,19 +27,15 @@ class ContactService {
       status = c["registration"];
       return (sign.token);
     } catch (e) {
-      print('Server Exception!!!');
-      print(e);
-      return e;
+      bool y = false;
+      print("server exception on create contact");
+      return y.toString();
     }
   }
 
   String _toJson(logIn) {
     var mapData = new Map();
-    //mapData["name"] = contact.name;
-    //mapData["dob"] = new DateFormat.yMd().format(contact.dob);
     mapData["phonenumber"] = logIn.phonenumber;
-    //mapData["email"] = contact.email;
-    //mapData["favoriteColor"] = contact.favoriteColor;
     String data = json.encode(mapData);
     return data;
   }
@@ -63,23 +59,21 @@ class SignUpService {
       var c = (jsonDecode(response.body)); //do we get the access token now?
       accessToken = c["accesstoken"];
       print(accessToken);
-      //accessKey.savedTokenPreference(accessToken);
       return accessToken;
-      //returns the access token
     } catch (e) {
-      print('Server Exception!!!');
+      var y = 'failed';
+      print("server exception on create signup");
       print(e);
-      return e;
+      return y;
     }
   }
 
   String _toJson(sign) {
     var mapData = new Map();
-    //mapData["name"] = contact.name;
-    //mapData["dob"] = new DateFormat.yMd().format(contact.dob);
     mapData["token"] = sign.token;
     mapData["code"] = sign.code;
     mapData["name"] = sign.name;
+    //mapData["zip"] = sign.zip;
     String data = json.encode(mapData);
     return data;
   }
@@ -100,9 +94,10 @@ class EnterCodeLoginService {
       //accessKey.savedTokenPreference(accessToken);
       return accessToken; //return the access code
     } catch (e) {
-      print('Server Exception!!!');
+      var y = 'failed';
+      print('Server Exception login!!!');
       print(e);
-      return e;
+      return y;
     }
   }
 
@@ -136,4 +131,3 @@ class SaveLoadAccessToken {
     return accessToken;
   }
 }
-

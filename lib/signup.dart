@@ -29,7 +29,7 @@ class _SignUpState extends State<SignUp> {
     final FormState form = _formKey.currentState;
 
     if (!form.validate()) {
-      showErrMessage('Form is not valid!  Please review and correct.');
+      showErrMessage('Invalid. Review name and code');
     } else {
       form.save();
       //var signUpService = SignUpService();
@@ -38,8 +38,8 @@ class _SignUpState extends State<SignUp> {
       print(newSignup.token);
       var signup = SignUpService();
       signup.createSignUp(newSignup).then((value) {
-        if (value == "error" || value == null) {
-          showErrMessage('Name has to be at least 3 letters, enter correct code!');
+        if (value == "error" || value == null || value == 'failed') {
+          showErrMessage('Enter the correct code please!');
         } else {
           saveKey.savedTokenPreference(value).then((onValue) {
             //saving key and pushing to a new screen with no back
@@ -85,8 +85,9 @@ class _SignUpState extends State<SignUp> {
                             labelText: 'Code',
                           ),
                           keyboardType: TextInputType.number,
-                          validator: (num) =>
-                              num.isEmpty ? 'Code is required' : null,
+                          validator: (num) => num.length < 6
+                              ? '6 digit Code is required'
+                              : null,
                           inputFormatters: [
                             //WhitelistingTextInputFormatter(new RegExp(r'^[()\d -]{1,15}$')),
                             LengthLimitingTextInputFormatter(6),
@@ -99,15 +100,30 @@ class _SignUpState extends State<SignUp> {
                             labelText: 'Name',
                           ),
                           keyboardType: TextInputType.text,
-                          validator: (name){
-                            name.isEmpty ? 'Name is required' : null;
-                          },
-
+                          validator: (name) => name.length < 3
+                              ? 'Name requires at least three letters'
+                              : null,
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(16),
                           ],
                           onSaved: (name) => newSignup.name = name,
                         ),
+                        /*
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'Enter your ZipCode',
+                            labelText: 'ZipCode',
+                          ),
+                          keyboardType: TextInputType.text,
+                          validator: (code) => code.length < 5
+                              ? 'ZipCode has to be 5 digits'
+                              : null,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(5),
+                          ],
+                          onSaved: (code) => newSignup.zip = code,
+                        ),
+                        */
                         Container(
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),

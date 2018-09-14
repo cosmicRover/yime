@@ -3,6 +3,7 @@ import './pages/freenowpage.dart';
 import './pages/friendspage.dart';
 import './pages/bottomnav.dart';
 import './pages/login.dart';
+import './pages/logout.dart';
 import './pages/entercode.dart';
 import './pages/signup.dart';
 import './pages/submitlog.dart';

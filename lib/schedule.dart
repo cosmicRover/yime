@@ -328,20 +328,6 @@ class SetScheduleState extends State<SetSchedule> {
 
   @override
   Widget build(BuildContext context) {
-    /*  this plan don't work.. value don't update more than once
-    Widget buildChip(bool x, String t) {
-      return ChoiceChip(
-          label: Text(t),
-          selected: x,
-          onSelected: (bool v) {
-            setState(() {
-              x = v;
-              print("bool setstate called");
-              print(x);
-            });
-          });
-    }
-*/
     return Material(
       child: Theme(
         data: ThemeData(
@@ -363,6 +349,7 @@ class SetScheduleState extends State<SetSchedule> {
           body: FutureBuilder(
             future: checkUser(),
             builder: (context, snapshot) {
+
               //builder takes context and snapshot
               if (snapshot.hasData) {
                 return ListView(
@@ -1061,16 +1048,31 @@ class SetScheduleState extends State<SetSchedule> {
                         )
                       ],
                     ),
-                  RaisedButton.icon(
-                      onPressed: () => submitHours().then((onValue) {}),
-                      icon: Icon(Icons.save),
-                      label: Text("Submit", style: chipText,)
-                  )
+                    RaisedButton.icon(
+                        onPressed: () => displayDialogue(),
+                        color: Colors.yellow,
+                        icon: Icon(Icons.save),
+                        label: Text(
+                          "Submit",
+                          style: chipText,
+                        )),
                   ],
                 );
               } else if (snapshot.hasError) {
                 //if the snapshot has error
-                return Text("${snapshot.error}");
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Are you connected to the internet?",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 28.0),
+                      ),
+                    ),
+                  ],
+                );
               }
               // By default, show a linear progress indicator
               return LinearProgressIndicator();
@@ -1079,6 +1081,26 @@ class SetScheduleState extends State<SetSchedule> {
         ),
       ),
     );
+  }
+
+  void displayDialogue() {
+    //show dialogue will build an alert dialogue
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Are you sure?"),
+            content: Text("Are you sure line 2"),
+            //the actions of the alert dialogue
+            actions: <Widget>[
+              FlatButton(
+                  //the yes button will submit the data
+                  onPressed: () => print("pressed!"),
+                  child: Text("Yes")),
+              FlatButton(onPressed: () => print("pressed!"), child: Text("NO"))
+            ],
+          );
+        });
   }
 
   dynamic extractHours(List<bool> x, List y) {

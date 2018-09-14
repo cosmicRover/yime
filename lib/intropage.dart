@@ -31,7 +31,7 @@ class _IntroPageState extends State<IntroPage> {
       fit: StackFit.expand,
       children: <Widget>[
         Container(
-          decoration: BoxDecoration(color: Colors.yellow),
+          decoration: BoxDecoration(color: Colors.white),
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -42,22 +42,13 @@ class _IntroPageState extends State<IntroPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 50.0,
-                      child: Text(
-                        "Yime",
-                        style: TextStyle(
-                            fontSize: 35.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ),
+                    Text("Yime", style: TextStyle(fontSize: 95.0)),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Text(
                         "Know when your squad is free.",
-                        style: TextStyle(fontSize: 15.0),
+                        style: TextStyle(
+                            fontSize: 15.0, fontWeight: FontWeight.bold),
                       ),
                     )
                   ],

@@ -19,7 +19,7 @@ class _LoginState extends State<Login> {
 
   void showErrMessage(String message, [MaterialColor color = Colors.red]) {
     _scaffoldKey.currentState.showSnackBar(
-        new SnackBar(backgroundColor: color, content: new Text(message)));
+        SnackBar(backgroundColor: color, content: Text(message)));
   }
 
   //the submit form function
@@ -28,7 +28,7 @@ class _LoginState extends State<Login> {
 
     //checking to see if the form's requirements been met
     if (!form.validate()) {
-      showErrMessage('Form is not valid!  Please review and correct.');
+      showErrMessage('Invalid! Number must be 10 digits long.');
     } else {
       form.save();
       var contactService = ContactService();
@@ -39,10 +39,14 @@ class _LoginState extends State<Login> {
           //the registration status decides which path to go to
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => EnterCode(value)));
-        } else {
+        } else if (status == true) {
           print(value);
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => SignUp(value)));
+        }
+        //this else if can't work because server returns null when unavailable
+        else if (status == false) {
+          showErrMessage('Are you connected to the interent?');
         }
       });
       //the value is returned by the createContact function which is being passed to SignUp function
@@ -76,14 +80,14 @@ class _LoginState extends State<Login> {
                       labelText: 'Phone number',
                     ),
                     keyboardType: TextInputType.number,
-                    validator: (value) {
-                      value.isEmpty ? 'Phone number is required' : null;
-                    },
+                    validator: (num) => num.length < 10
+                        ? 'Number must be 10 digits long'
+                        : null,
                     inputFormatters: [
                       //WhitelistingTextInputFormatter(new RegExp(r'^[()\d -]{1,15}$')),
                       LengthLimitingTextInputFormatter(10),
                     ],
-                    onSaved: (val) => newLogin.phonenumber = val,
+                    onSaved: (num) => newLogin.phonenumber = num,
                   ),
                   Container(
                     child: Padding(
@@ -92,7 +96,6 @@ class _LoginState extends State<Login> {
                           onPressed: _submitForm,
                           icon: Icon(
                             Icons.send,
-                            color: Colors.yellow[700],
                           ),
                           label: Text("Login")),
                     ),

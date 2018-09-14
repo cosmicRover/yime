@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import './friendrequest.dart';
+
 //In this page, I'm attempting to retrieve all the friends that are online
 class FreeNow extends StatefulWidget {
   @override
@@ -48,7 +50,7 @@ class FreeNowState extends State<FreeNow> {
       print("data retrieved");
       List<User> userList = createUserList(responseJson);
       //built in sorting algorithm on dart
-      userList.sort((a,b){
+      userList.sort((a, b) {
         return a.name.toLowerCase().compareTo(b.name.toLowerCase());
       });
       return userList;
@@ -65,15 +67,9 @@ class FreeNowState extends State<FreeNow> {
     List<User> list = List();
     for (int i = 0; i < data.length; i++) {
       String title = data[i]["name"];
-      //String node = data[i]["node_id"];
       int id = data[i]["id"];
-      //bool admin = data[i]["site_admin"];
-      //checking to see if an user is admin. Same process goes for online status
-      //if(admin == true){
       User user = User(name: title, id: id);
-      //if admin, add user to the list
       list.add(user);
-      //}
     }
     if (addedOnline == false) {
       addedOnline = true;
@@ -87,7 +83,7 @@ class FreeNowState extends State<FreeNow> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
+    return Material(
       child: Theme(
         data: ThemeData(
             primarySwatch: Colors.yellow,
@@ -96,6 +92,16 @@ class FreeNowState extends State<FreeNow> {
         child: Scaffold(
           appBar: AppBar(
             title: Text("Yime"),
+            actions: <Widget>[
+              FlatButton.icon(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FriendRequest())),
+                  icon: Icon(Icons.person_add),
+                  label: Text(
+                    "Add freinds",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ))
+            ],
           ),
           body: Stack(
             children: <Widget>[
@@ -116,7 +122,7 @@ class FreeNowState extends State<FreeNow> {
                       //builder takes context and snapshot
                       if (snapshot.hasData) {
                         //if the snapshot contains data
-                        return new ListView.builder(
+                        return ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               return Column(
@@ -137,7 +143,24 @@ class FreeNowState extends State<FreeNow> {
                             });
                       } else if (snapshot.hasError) {
                         //if the snapshot has error
-                        return Text("${snapshot.error}");
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Are you connected to the internet?",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28.0),
+                              ),
+                            ),
+                            FlatButton.icon(
+                                onPressed: fetchUsersFromGitHub,
+                                icon: Icon(Icons.refresh),
+                                label: Text("Tap to refresh"))
+                          ],
+                        );
                       }
                       // By default, show a linear progress indicator
                       return Padding(
