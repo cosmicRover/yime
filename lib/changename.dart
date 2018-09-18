@@ -6,19 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class FriendRequest extends StatefulWidget {
+class ChangeName extends StatefulWidget {
   @override
-  _FriendRequestState createState() => _FriendRequestState();
+  _ChangeNameState createState() => _ChangeNameState();
 }
 
-class _FriendRequestState extends State<FriendRequest> {
+class _ChangeNameState extends State<ChangeName> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String phoneNumber;
+  String name;
   static String accessToken;
   static String authCode;
   static const _serviceUrl =
-      'https://yime.herokuapp.com/api/friendrequest/create'; //schedule, available, friend and me(coming soon)
+      'https://yime.herokuapp.com/api/me';
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ class _FriendRequestState extends State<FriendRequest> {
       form.save();
       try {
         var mapData = new Map();
-        mapData["phonenumber"] = phoneNumber;
+        mapData["name"] = name;
         var data = json.encode(mapData);
         final response =
         await http.post(Uri.encodeFull(_serviceUrl), headers: _headers, body: data);
@@ -79,44 +79,44 @@ class _FriendRequestState extends State<FriendRequest> {
               padding: const EdgeInsets.all(8.0),
               child: SafeArea(
                   child: Form(
-                key: _formKey,
-                autovalidate: true,
-                child: ListView(children: <Widget>[
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Enter the phone number',
-                      labelText: 'Phone number',
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (num) => num.length < 10
-                        ? 'Number must be 10 digits long'
-                        : null,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    onSaved: (num) => phoneNumber=num,
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: FlatButton.icon(
-                          onPressed:()=> _submitForm().then((onValue){
-                            if(onValue== 200){
-                              showErrMessage("Request sent!", Colors.green);
-                            }
-                            else{
-                              showErrMessage("Something went wrong", Colors.red);
-                            }
+                    key: _formKey,
+                    autovalidate: true,
+                    child: ListView(children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter your new name',
+                          labelText: 'Name',
+                        ),
+                        keyboardType: TextInputType.text,
+                        validator: (txt) => txt.length < 3
+                            ? 'Name requires at least three characters'
+                            : null,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        onSaved: (txt) => name=txt,
+                      ),
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: FlatButton.icon(
+                              onPressed:()=> _submitForm().then((onValue){
+                                if(onValue== 200){
+                                  showErrMessage("Name Updated", Colors.green);
+                                }
+                                else{
+                                  showErrMessage("Something went wrong", Colors.red);
+                                }
 
-                          }),
-                          icon: Icon(
-                            Icons.send,
-                          ),
-                          label: Text("Send request")),
-                    ),
-                  )
-                ]),
-              ))),
+                              }),
+                              icon: Icon(
+                                Icons.send,
+                              ),
+                              label: Text("Update name")),
+                        ),
+                      )
+                    ]),
+                  ))),
         ),
       ),
     );
@@ -130,5 +130,5 @@ class _FriendRequestState extends State<FriendRequest> {
         accessToken; //adding bearer to accesscode for security reason
     print(authCode);
     return authCode;
-    }
+  }
 }

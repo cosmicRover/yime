@@ -45,52 +45,53 @@ class BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Theme(
-        data: ThemeData(
-            splashColor: Colors.red,
-        ),
         child: Scaffold(
           body: currentPage,
-          bottomNavigationBar: BottomNavigationBar(
-              fixedColor: Colors.black,
-              currentIndex: currentTab,
-              onTap: (int index) {
-                setState(() {
-                  currentTab = index;
-                  currentPage = pages[index];
-                });
-              },
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.person,
-                      color: Colors.yellow[900],
-                    ),
-                    title: Text(
-                      "Me",
-                      style: TextStyle(color: Colors.black),
-                    )),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.free_breakfast,
-                      color: Colors.yellow[900],
-                    ),
-                    title: Text(
-                      "Free now",
-                      style: TextStyle(color: Colors.black),
-                    )),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.people,
-                      color: Colors.yellow[900],
-                    ),
-                    title: Text(
-                      "Friends",
-                      style: TextStyle(color: Colors.black),
-                    )),
-              ]),
+          bottomNavigationBar: Theme(
+            data: ThemeData(
+              splashColor: Colors.yellow
+            ),
+            child: BottomNavigationBar(
+                //the color that the active icon will use
+                fixedColor: Colors.yellow[700],
+                currentIndex: currentTab,
+                onTap: (int index) {
+                  setState(() {
+                    currentTab = index;
+                    currentPage = pages[index];
+                  });
+                },
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.person,
+                        //color: Colors.yellow[900],
+                      ),
+                      title: Text(
+                        "Me",
+                        style: TextStyle(color: Colors.black),
+                      )),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.free_breakfast,
+                        //color: Colors.yellow[900],
+                      ),
+                      title: Text(
+                        "Free now",
+                        style: TextStyle(color: Colors.black),
+                      )),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.people,
+                        //color: Colors.yellow[900],
+                      ),
+                      title: Text(
+                        "Friends",
+                        style: TextStyle(color: Colors.black),
+                      )),
+                ]),
+          ),
         ),
-      ),
     );
   }
 }

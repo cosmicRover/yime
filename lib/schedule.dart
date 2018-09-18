@@ -11,6 +11,7 @@ class SetSchedule extends StatefulWidget {
 }
 
 class SetScheduleState extends State<SetSchedule> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   static String accessToken;
   static String authCode;
   List days = [
@@ -39,6 +40,12 @@ class SetScheduleState extends State<SetSchedule> {
     'Authorization': authCode,
     'Content-Type': 'application/json'
   };
+
+  void showErrMessage(String message, Color c) {
+    _scaffoldKey.currentState
+        .showSnackBar(SnackBar(backgroundColor: c, content: Text(message)));
+  }
+
   var hasInfo = false;
   Future<dynamic> getInfo() async {
     //this function will get the response for api/me and then it will assign
@@ -48,8 +55,8 @@ class SetScheduleState extends State<SetSchedule> {
         final response =
             await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
         var c = jsonDecode(response.body);
-        print(c);
-        var schedule = c["schedule"];
+        print("schedule is $c");
+        var schedule = c;
 
         //assigning the retrieved values to a list of days
         //if length is 0, assign null
@@ -342,6 +349,7 @@ class SetScheduleState extends State<SetSchedule> {
           dividerColor: Colors.yellow[700],
         ),
         child: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text("Yime"),
             backgroundColor: Colors.yellow,
@@ -349,7 +357,6 @@ class SetScheduleState extends State<SetSchedule> {
           body: FutureBuilder(
             future: checkUser(),
             builder: (context, snapshot) {
-
               //builder takes context and snapshot
               if (snapshot.hasData) {
                 return ListView(
@@ -1089,15 +1096,27 @@ class SetScheduleState extends State<SetSchedule> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Are you sure?"),
-            content: Text("Are you sure line 2"),
+            title: Text("Submit?"),
+            content: Text("Press yes to update your schedule"),
             //the actions of the alert dialogue
             actions: <Widget>[
               FlatButton(
-                  //the yes button will submit the data
-                  onPressed: () => print("pressed!"),
+                  onPressed: () {
+                    submitHours().then((onValue){
+                      if(onValue == 200){
+                        showErrMessage("Submitted!", Colors.green);
+                      }
+                      else {
+                        showErrMessage("Something went wrong, try later", Colors.red);
+                      }
+                      Navigator.pop(context);
+                    });
+                  },
                   child: Text("Yes")),
-              FlatButton(onPressed: () => print("pressed!"), child: Text("NO"))
+              FlatButton(onPressed: (){
+                Navigator.pop(context);
+              },
+                  child: Text("No"))
             ],
           );
         });
@@ -1138,11 +1157,26 @@ class SetScheduleState extends State<SetSchedule> {
     mapData["saturday"] = saturday;
     mapData["sunday"] = sunday;
 
-    var schedule = Map();
-    schedule["schedule"] = mapData;
-    print(schedule);
-    //ready to post schedule
+    var data = jsonEncode(mapData);
+    print(data);
+    //encoding ready to post schedule
 
-    return true;
+    const _serviceUrl =
+        'https://yime.herokuapp.com/api/schedule'; //schedule, available, friend and me(coming soon)
+    final _headers = {
+      'Authorization': authCode,
+      'Content-Type': 'application/json'
+    };
+    try{
+      final response =
+      await http.post(_serviceUrl, headers: _headers, body: data);
+      var c = response.statusCode;
+      print(c);
+      return c;
+    }
+    catch (e){
+      print(e);
+      return e;
+    }
   }
 }

@@ -15,11 +15,11 @@ class Friends extends StatefulWidget {
 
 //this class indicates the values that we will be using on the app
 class User {
-  String name, status;
+  String name, status, phonenumber;
   int id;
   //bool admin;
   //custom defined constructor referencing all of it's defined variables
-  User({this.name, this.id, this.status});
+  User({this.name, this.id, this.status, this.phonenumber});
 }
 
 //getting the json data from the api
@@ -47,7 +47,8 @@ class FriendsState extends State<Friends> {
       final response =
           await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
       var c = jsonDecode(response.body);
-      List responseJson = c["friends"];
+      print(c);
+      List responseJson = c;
       print("data retrieved");
       List<User> userList = createUserList(responseJson);
       //dart sorting algorithm for userList
@@ -71,8 +72,9 @@ class FriendsState extends State<Friends> {
     for (int i = 0; i < data.length; i++) {
       String title = data[i]["name"];
       String status = data[i]["status"];
+      String phonenumber = data[i]["phonenumber"];
       int id = data[i]["id"];
-      User user = User(name: title, id: id, status: status);
+      User user = User(name: title, id: id, status: status, phonenumber: phonenumber);
       list.add(user);
     }
 
@@ -161,7 +163,7 @@ class FriendsState extends State<Friends> {
                                     buildList(
                                         snapshot.data[index].status,
                                         snapshot.data[index].name,
-                                        snapshot.data[index].id.toString()),
+                                        snapshot.data[index].phonenumber),
                                     //Divider()
                                   ]);
                             });
@@ -180,7 +182,11 @@ class FriendsState extends State<Friends> {
                               ),
                             ),
                             FlatButton.icon(
-                                onPressed: fetchUsersFromGitHub,
+                                onPressed: (){
+                                  setState(() {
+                                    fetchUsersFromGitHub();
+                                  });
+                                },
                                 icon: Icon(Icons.refresh),
                                 label: Text("Tap to refresh")
                             )

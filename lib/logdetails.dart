@@ -4,7 +4,7 @@ class LogInDetails {
 }
 
 class SignUpDetails{
-  String token, code, name/*, zip*/;
+  String token, code, name, zipcode;
 }
 
 class EnterCodeLoginDetails{

@@ -5,34 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './friendprofile.dart';
-import './friendrequest.dart';
-
 //In this page, I'm attempting to retrieve all the friends that are online
-class FreeNow extends StatefulWidget {
+class DisplayFriendRequest extends StatefulWidget {
   @override
-  FreeNowState createState() => new FreeNowState();
+  DisplayFriendRequestState createState() => new DisplayFriendRequestState();
 }
 
 //this class indicates the values that we will be using on the app
 class User {
   String name, phonenumber;
   int id;
-  //bool admin;
-  //custom defined constructor referencing all of it's defined variables
-  User({this.name, this.id, this.phonenumber});
+  User({this.name, this.phonenumber, this.id});
 }
 
 //getting the json data from the api
-class FreeNowState extends State<FreeNow> {
-  //var passId = new FriendProfile();
-
+class DisplayFriendRequestState extends State<DisplayFriendRequest> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static String accessToken;
   static String authCode;
-  var onlineFriends = 0;
+  var requests = 0;
 
   static const _serviceUrl =
-      'https://yime.herokuapp.com/api/available'; //schedule, available, friend and me(coming soon)
+      'https://yime.herokuapp.com/api/friendrequest'; //schedule, available, friend and me(coming soon)
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'
@@ -71,19 +65,24 @@ class FreeNowState extends State<FreeNow> {
     List<User> list = List();
     for (int i = 0; i < data.length; i++) {
       String title = data[i]["name"];
-      int id = data[i]["id"];
       String phonenumber = data[i]["phonenumber"];
-      User user = User(name: title, id: id, phonenumber: phonenumber);
+      int id = data[i]["id"];
+      User user = User(name: title, phonenumber: phonenumber, id: id);
       list.add(user);
     }
     if (addedOnline == false) {
       addedOnline = true;
       setState(() {
-        onlineFriends = list.length;
+        requests = list.length;
         print("set called");
       });
     }
     return list;
+  }
+
+  void showErrMessage(String message, Color c) {
+    _scaffoldKey.currentState
+        .showSnackBar(SnackBar(backgroundColor: c, content: Text(message)));
   }
 
   @override
@@ -95,30 +94,22 @@ class FreeNowState extends State<FreeNow> {
             canvasColor: Colors.white,
             splashColor: Colors.yellow),
         child: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text("Yime"),
-            actions: <Widget>[
-              FlatButton.icon(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FriendRequest())),
-                  icon: Icon(Icons.person_add),
-                  label: Text(
-                    "Add freinds",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ))
-            ],
           ),
           body: Stack(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    const EdgeInsets.only(top: 8.0, bottom: 35.0, left: 8.0),
                 child: Text(
-                  "Free Now: $onlineFriends",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  "Friend Requests: $requests",
+                  style: TextStyle(fontSize: 20.0),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 8.0),
+                padding: const EdgeInsets.only(top: 45.0, left: 8.0),
                 child: Container(
                   //future builder takes same parameter as http.get function
                   child: FutureBuilder<List<User>>(
@@ -135,17 +126,16 @@ class FreeNowState extends State<FreeNow> {
                                   children: <Widget>[
                                     ListTile(
                                       leading: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
+                                        Icons.person_add,
+                                        color: Colors.yellow[700],
                                       ),
                                       title: Text(snapshot.data[index].name),
                                       subtitle: Text(
                                           snapshot.data[index].phonenumber),
-                                      onTap: () => mainBottomSheet(
-                                          context,
-                                          snapshot.data[index].id.toString(),
-                                          snapshot.data[index]
-                                              .name), //id being passed for profile request
+                                      onTap: () {
+                                        mainBottomSheet(
+                                            context, snapshot.data[index].id);
+                                      }, //id being passed for profile request
                                     ),
                                     //Divider()
                                   ]);
@@ -165,7 +155,7 @@ class FreeNowState extends State<FreeNow> {
                               ),
                             ),
                             FlatButton.icon(
-                                onPressed: () {
+                                onPressed: (){
                                   setState(() {
                                     fetchUsersFromGitHub();
                                   });
@@ -191,9 +181,36 @@ class FreeNowState extends State<FreeNow> {
     );
   }
 
+  Future<dynamic> answerRequest(int x, bool y) async {
+    const _serviceUrl =
+        'https://yime.herokuapp.com/api/friendrequest/'; //schedule, available, friend and me(coming soon)
+    final _headers = {
+      'Authorization': authCode,
+      'Content-Type': 'application/json'
+    };
+
+    var mapData = new Map();
+    mapData["id"] = x;
+    mapData["accept"] = y;
+    var data = jsonEncode(mapData);
+
+    try {
+      final response =
+          await http.post(_serviceUrl, headers: _headers, body: data);
+      var c = response.statusCode; //do we get the access token now?
+      print(c);
+      return c;
+    } catch (e) {
+      var y = 'failed';
+      print("server exception on create signup");
+      print(e);
+      return y;
+    }
+  }
+
   //takes context and int id from snapshot
   //can this be used to set state on schedule page??
-  mainBottomSheet(BuildContext context, String x, String y) {
+  mainBottomSheet(BuildContext context, int x) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -201,16 +218,52 @@ class FreeNowState extends State<FreeNow> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.schedule),
-                title: Text("See $y's schedule"),
+                leading: Icon(Icons.check),
+                title: Text("Accept"),
                 //onTap needs navigator.pop
                 //on tap will navigate to the page where profile can be viewed
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FriendProfile(x)));
-                },
+
+                onTap: () => answerRequest(x, true).then((onValue) {
+                      Navigator.pop(context);
+                      print("response $onValue");
+                     if(onValue== 200){
+                       setState(() {
+                         fetchUsersFromGitHub();
+                         requests--;
+                       });
+                     }
+                     else{
+                       setState(() {
+                         fetchUsersFromGitHub();
+                       });
+                       showErrMessage("Something went wrong", Colors.red);
+                     }
+                    }),
+              ),
+              ListTile(
+                leading: Icon(Icons.clear),
+                title: Text("Decline"),
+                //onTap needs navigator.pop
+                //on tap will navigate to the page where profile can be viewed
+
+                onTap: () => answerRequest(x, false).then((onValue) {
+                      Navigator.pop(context);
+                      print("response $onValue");
+                      setState(() {
+                        if(onValue== 200){
+                          setState(() {
+                            fetchUsersFromGitHub();
+                            requests--;
+                          });
+                        }
+                        else{
+                          setState(() {
+                            fetchUsersFromGitHub();
+                          });
+                          showErrMessage("Something went wrong", Colors.red);
+                        }
+                      });
+                    }),
               )
             ],
           );

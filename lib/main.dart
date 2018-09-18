@@ -8,7 +8,9 @@ import './pages/entercode.dart';
 import './pages/signup.dart';
 import './pages/submitlog.dart';
 import './pages/intropage.dart';
+import './pages/mepage.dart';
 import './pages/schedule.dart';
+import './pages/friendprofile.dart';
 
 
 import 'package:flutter/material.dart';

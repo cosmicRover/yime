@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './logout.dart';
+import './schedule.dart';
+import './displayrequests.dart';
+import './changename.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class Me extends StatefulWidget {
@@ -13,27 +17,26 @@ class Me extends StatefulWidget {
   MeState createState() => new MeState();
 }
 
-//this class indicates the values that we will be using on the app
-class User {
-  String name;
-  int id;
-  User({this.name, this.id});
-}
-
 //getting the json data from the api
 class MeState extends State<Me> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   static String accessToken;
   static String authCode;
   var onlineFriends = 0;
 
   static const _serviceUrl =
-      'https://yime.herokuapp.com/api/available'; //waiting for me api
+      'https://yime.herokuapp.com/api/me'; //waiting for me api
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'
   };
 
-  Future<List<User>> fetchUsersFromGitHub() async {
+  var userName = 'Are you connected to the internet?';
+  var today = 'Unavalable';
+  var tomorrow = 'Unavalable';
+
+  Future<dynamic> fetchUsersFromGitHub() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     accessToken = prefs.getString("accesstoken");
     print("accesstoken retreived");
@@ -44,14 +47,11 @@ class MeState extends State<Me> {
       final response =
           await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
       var c = jsonDecode(response.body);
-      List responseJson = c["available"];
-      print("data retrieved");
-      List<User> userList = createUserList(responseJson);
-      //built in sorting algorithm on dart
-      userList.sort((a, b) {
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      });
-      return userList;
+      print(c);
+      userName = c["name"];
+      today = c["today"];
+      tomorrow = c["tomorrow"];
+      return true;
     } catch (e) {
       print('Server Exception!!! on getinfo ');
       print(e);
@@ -59,26 +59,26 @@ class MeState extends State<Me> {
     }
   }
 
-  var addedOnline = false;
-//creating a list of users with three values retrieved from api
-  List<User> createUserList(List data) {
-    List<User> list = List();
-    for (int i = 0; i < data.length; i++) {
-      String title = data[i]["name"];
-      int id = data[i]["id"];
-      User user = User(name: title, id: id);
-      list.add(user);
-      //}
+  Future<dynamic> checkConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        return "connected";
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      return "not connectted";
     }
-    if (addedOnline == false) {
-      addedOnline = true;
-      setState(() {
-        onlineFriends = list.length;
-        print("set called");
-      });
-    }
-    return list;
   }
+
+  void showErrMessage(String message, Color c) {
+    _scaffoldKey.currentState
+        .showSnackBar(SnackBar(backgroundColor: c, content: Text(message)));
+  }
+
+  var style = TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0);
+  var buttonStyle = TextStyle(fontSize: 15.0);
 
   @override
   Widget build(BuildContext context) {
@@ -89,15 +89,17 @@ class MeState extends State<Me> {
             canvasColor: Colors.white,
             splashColor: Colors.yellow),
         child: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text("Yime"),
             actions: <Widget>[
-              FlatButton(
+              FlatButton.icon(
                   onPressed: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LogOut()));
                   },
-                  child: Text(
+                  icon: Icon(Icons.directions_run),
+                  label: Text(
                     "Logout",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ))
@@ -105,56 +107,121 @@ class MeState extends State<Me> {
           ),
           body: Stack(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Waiting for me api",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 8.0),
-                child: Container(
-                  //future builder takes same parameter as http.get function
-                  child: FutureBuilder<List<User>>(
-                    future: fetchUsersFromGitHub(), //calling the fetch function
-                    builder: (context, snapshot) {
-                      //builder takes context and snapshot
-                      if (snapshot.hasData) {
-                        //if the snapshot contains data
-                        return new ListView.builder(
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    //Divider()
-                                  ]);
-                            });
-                      } else if (snapshot.hasError) {
-                        //if the snapshot has error
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Are you connected to the internet?",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28.0),
-                              ),
+              Container(
+                //future builder takes same parameter as http.get function
+                child: FutureBuilder(
+                  future: fetchUsersFromGitHub(), //calling the fetch function
+                  builder: (context, snapshot) {
+                    //builder takes context and snapshot
+                    if (snapshot.hasData) {
+                      //if the snapshot contains data
+                      return new ListView(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Center(
+                                child: Text(
+                              userName,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 45.0),
+                            )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20.0, bottom: 8.0, left: 8.0),
+                            child: Text(
+                              "Today",
+                              style: style,
                             ),
-                          ],
-                        );
-                      }
-                      // By default, show a linear progress indicator
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: LinearProgressIndicator(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(today),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20.0, bottom: 8.0, left: 8.0),
+                            child: Text(
+                              "Tomorrow",
+                              style: style,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(tomorrow),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: Divider(),
+                          ),
+                          FlatButton(
+                              onPressed: () {
+                                checkConnection().then((onValue) {
+                                  print("value passed $onValue");
+                                  if (onValue == 'connected') {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SetSchedule()));
+                                  } else {
+                                    showErrMessage(
+                                        "Are you connected to the internet",
+                                        Colors.red);
+                                  }
+                                });
+                              },
+                              child: Text(
+                                "Edit your schedule",
+                                style: buttonStyle,
+                              )),
+                          Divider(
+                            height: 10.0,
+                          ),
+                          FlatButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChangeName())),
+                              child: Text(
+                                "Change your name",
+                                style: buttonStyle,
+                              )),
+                          Divider(
+                            height: 10.0,
+                          ),
+                          FlatButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DisplayFriendRequest())),
+                              child: Text(
+                                "Friend requests",
+                                style: buttonStyle,
+                              ))
+                        ],
                       );
-                    },
-                  ),
+                    } else if (snapshot.hasError) {
+                      //if the snapshot has error
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Are you connected to the internet?",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 28.0),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    // By default, show a linear progress indicator
+                    return LinearProgressIndicator();
+                  },
                 ),
               ),
             ],

@@ -73,7 +73,7 @@ class SignUpService {
     mapData["token"] = sign.token;
     mapData["code"] = sign.code;
     mapData["name"] = sign.name;
-    //mapData["zip"] = sign.zip;
+    mapData["zipcode"] = sign.zipcode;
     String data = json.encode(mapData);
     return data;
   }

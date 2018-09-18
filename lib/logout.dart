@@ -65,6 +65,7 @@ class _LogOutState extends State<LogOut> {
     //String _token;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("accesstoken");
+    print("deleted acToken");
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => Login()));
   }

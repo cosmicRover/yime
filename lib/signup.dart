@@ -104,11 +104,10 @@ class _SignUpState extends State<SignUp> {
                               ? 'Name requires at least three letters'
                               : null,
                           inputFormatters: [
-                            LengthLimitingTextInputFormatter(16),
+                            LengthLimitingTextInputFormatter(10),
                           ],
                           onSaved: (name) => newSignup.name = name,
                         ),
-                        /*
                         TextFormField(
                           decoration: InputDecoration(
                             hintText: 'Enter your ZipCode',
@@ -121,9 +120,8 @@ class _SignUpState extends State<SignUp> {
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(5),
                           ],
-                          onSaved: (code) => newSignup.zip = code,
+                          onSaved: (code) => newSignup.zipcode = code,
                         ),
-                        */
                         Container(
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),
