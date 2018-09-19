@@ -86,6 +86,12 @@ class FreeNowState extends State<FreeNow> {
     return list;
   }
 
+  String friendId;
+  Future<dynamic> setId(String x) async {
+    friendId = x;
+    return friendId;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -140,12 +146,16 @@ class FreeNowState extends State<FreeNow> {
                                       ),
                                       title: Text(snapshot.data[index].name),
                                       subtitle: Text(
-                                          snapshot.data[index].phonenumber),
-                                      onTap: () => mainBottomSheet(
-                                          context,
-                                          snapshot.data[index].id.toString(),
-                                          snapshot.data[index]
-                                              .name), //id being passed for profile request
+                                          snapshot.data[index].id.toString()),
+                                      onTap: () {
+                                        setId(snapshot.data[index].id
+                                                .toString())
+                                            .then((onValue) {
+                                          print(friendId);
+                                          mainBottomSheet(context, friendId,
+                                              snapshot.data[index].name);
+                                        });
+                                      }, //id being passed for profile request
                                     ),
                                     //Divider()
                                   ]);
@@ -193,7 +203,7 @@ class FreeNowState extends State<FreeNow> {
 
   //takes context and int id from snapshot
   //can this be used to set state on schedule page??
-  mainBottomSheet(BuildContext context, String x, String y) {
+  mainBottomSheet(BuildContext context, String id, String name) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -202,14 +212,12 @@ class FreeNowState extends State<FreeNow> {
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.schedule),
-                title: Text("See $y's schedule"),
-                //onTap needs navigator.pop
-                //on tap will navigate to the page where profile can be viewed
+                title: Text("See $name's schedule"),
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FriendProfile(x)));
+                          builder: (context) => FriendProfile(id)));
                 },
               )
             ],

@@ -11,7 +11,50 @@ import './schedule.dart';
 import './displayrequests.dart';
 import './changename.dart';
 
-//In this page, I'm attempting to retrieve all the friends that are online
+String accessToken;
+String authCode;
+String _serviceUrl = 'https://yime.herokuapp.com/api/me';
+final _headers = {
+  'Authorization': authCode,
+  'Content-Type': 'application/json'
+};
+
+Future<Post> fetchPost() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  accessToken = prefs.getString("accesstoken");
+  print("accesstoken retreived");
+  authCode =
+      'Bearer ' + accessToken; //adding bearer to accesscode for security reason
+  print(authCode);
+
+  final response =
+      await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
+  print(response.body);
+
+  if (response.statusCode == 200) {
+    // If the call to the server was successful, parse the JSON
+    return Post.fromJson(json.decode(response.body));
+  } else {
+    // If that call was not successful, throw an error.
+    throw Exception('Failed to load post');
+  }
+}
+
+class Post {
+  final String name, phonenumber, timezone, today, tomorrow;
+
+  Post({this.name, this.phonenumber, this.timezone, this.today, this.tomorrow});
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+        name: json['name'],
+        phonenumber: json['phonenumber'],
+        timezone: json['timezone'],
+        today: json['today'],
+        tomorrow: json['tomorrow']);
+  }
+}
+
 class Me extends StatefulWidget {
   @override
   MeState createState() => new MeState();
@@ -20,44 +63,6 @@ class Me extends StatefulWidget {
 //getting the json data from the api
 class MeState extends State<Me> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
-  static String accessToken;
-  static String authCode;
-  var onlineFriends = 0;
-
-  static const _serviceUrl =
-      'https://yime.herokuapp.com/api/me'; //waiting for me api
-  static final _headers = {
-    'Authorization': authCode,
-    'Content-Type': 'application/json'
-  };
-
-  var userName = 'Are you connected to the internet?';
-  var today = 'Unavalable';
-  var tomorrow = 'Unavalable';
-
-  Future<dynamic> fetchUsersFromGitHub() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
-    print(authCode);
-    try {
-      final response =
-          await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
-      var c = jsonDecode(response.body);
-      print(c);
-      userName = c["name"];
-      today = c["today"];
-      tomorrow = c["tomorrow"];
-      return true;
-    } catch (e) {
-      print('Server Exception!!! on getinfo ');
-      print(e);
-      return e;
-    }
-  }
 
   Future<dynamic> checkConnection() async {
     try {
@@ -109,8 +114,8 @@ class MeState extends State<Me> {
             children: <Widget>[
               Container(
                 //future builder takes same parameter as http.get function
-                child: FutureBuilder(
-                  future: fetchUsersFromGitHub(), //calling the fetch function
+                child: FutureBuilder<Post>(
+                  future: fetchPost(), //calling the fetch function
                   builder: (context, snapshot) {
                     //builder takes context and snapshot
                     if (snapshot.hasData) {
@@ -121,7 +126,7 @@ class MeState extends State<Me> {
                             padding: const EdgeInsets.only(top: 10.0),
                             child: Center(
                                 child: Text(
-                              userName,
+                              snapshot.data.name,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 45.0),
                             )),
@@ -136,7 +141,7 @@ class MeState extends State<Me> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(today),
+                            child: Text(snapshot.data.today),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
@@ -148,7 +153,7 @@ class MeState extends State<Me> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(tomorrow),
+                            child: Text(snapshot.data.tomorrow),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 15.0),
@@ -182,8 +187,7 @@ class MeState extends State<Me> {
                               onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChangeName())),
+                                      builder: (context) => ChangeName())),
                               child: Text(
                                 "Change your name",
                                 style: buttonStyle,
@@ -216,6 +220,14 @@ class MeState extends State<Me> {
                                   fontWeight: FontWeight.bold, fontSize: 28.0),
                             ),
                           ),
+                          FlatButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  fetchPost();
+                                });
+                              },
+                              icon: Icon(Icons.refresh),
+                              label: Text("Tap to refresh"))
                         ],
                       );
                     }

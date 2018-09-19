@@ -12,11 +12,10 @@ import './pages/mepage.dart';
 import './pages/schedule.dart';
 import './pages/friendprofile.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-void main()=> runApp(Yime());
+void main() => runApp(Yime());
 
 class Yime extends StatefulWidget {
   @override
@@ -24,7 +23,6 @@ class Yime extends StatefulWidget {
 }
 
 class _YimeState extends State<Yime> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,4 +34,3 @@ class _YimeState extends State<Yime> {
     );
   }
 }
-

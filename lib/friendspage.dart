@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './friendrequest.dart';
+import './friendprofile.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class Friends extends StatefulWidget {
@@ -53,7 +54,7 @@ class FriendsState extends State<Friends> {
       List<User> userList = createUserList(responseJson);
       //dart sorting algorithm for userList
       //a and b points to two points in which to compare to
-      userList.sort((a,b){
+      userList.sort((a, b) {
         return a.name.toLowerCase().compareTo(b.name.toLowerCase());
       });
       return userList;
@@ -74,7 +75,8 @@ class FriendsState extends State<Friends> {
       String status = data[i]["status"];
       String phonenumber = data[i]["phonenumber"];
       int id = data[i]["id"];
-      User user = User(name: title, id: id, status: status, phonenumber: phonenumber);
+      User user =
+          User(name: title, id: id, status: status, phonenumber: phonenumber);
       list.add(user);
     }
 
@@ -88,19 +90,30 @@ class FriendsState extends State<Friends> {
     return list;
   }
 
+  String friendId;
+  Future<dynamic> setId(String x) async {
+    friendId = x;
+    return friendId;
+  }
+
   @override
   Widget build(BuildContext context) {
     //custom widget for list tile which allows if statements
-    Widget buildList(String x, y, z) {
-      if (x == 'available') {
+    Widget buildList(String status, name, phone, int id) {
+      if (status == 'available') {
         return ListTile(
           leading: Icon(
             Icons.check_circle,
             color: Colors.green,
           ),
-          title: Text(y),
-          subtitle: Text(z),
-          onTap: () => print("pressed"),
+          title: Text(name),
+          subtitle: Text(phone),
+          onTap: () {
+            setId(id.toString()).then((onValue) {
+              print(friendId);
+              mainBottomSheet(context, friendId, name);
+            });
+          },
         );
       } else {
         return ListTile(
@@ -108,9 +121,14 @@ class FriendsState extends State<Friends> {
             Icons.person,
             color: Colors.yellow[700],
           ),
-          title: Text(y),
-          subtitle: Text(z),
-          onTap: () => print("pressed-else"),
+          title: Text(name),
+          subtitle: Text(phone),
+          onTap: () {
+            setId(id.toString()).then((onValue) {
+              print(friendId);
+              mainBottomSheet(context, friendId, name);
+            });
+          },
         );
       }
     }
@@ -163,7 +181,8 @@ class FriendsState extends State<Friends> {
                                     buildList(
                                         snapshot.data[index].status,
                                         snapshot.data[index].name,
-                                        snapshot.data[index].phonenumber),
+                                        snapshot.data[index].phonenumber,
+                                        snapshot.data[index].id),
                                     //Divider()
                                   ]);
                             });
@@ -174,22 +193,21 @@ class FriendsState extends State<Friends> {
                           children: <Widget>[
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("Are you connected to the internet?",
+                              child: Text(
+                                "Are you connected to the internet?",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 28.0
-                                ),
+                                    fontSize: 28.0),
                               ),
                             ),
                             FlatButton.icon(
-                                onPressed: (){
+                                onPressed: () {
                                   setState(() {
                                     fetchUsersFromGitHub();
                                   });
                                 },
                                 icon: Icon(Icons.refresh),
-                                label: Text("Tap to refresh")
-                            )
+                                label: Text("Tap to refresh"))
                           ],
                         );
                       }
@@ -207,5 +225,27 @@ class FriendsState extends State<Friends> {
         ),
       ),
     );
+  }
+
+  mainBottomSheet(BuildContext context, String id, String name) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.schedule),
+                title: Text("See $name's schedule"),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FriendProfile(id)));
+                },
+              )
+            ],
+          );
+        });
   }
 }
