@@ -68,7 +68,7 @@ class BottomNavigationState extends State<BottomNavigation> {
                         //color: Colors.yellow[900],
                       ),
                       title: Text(
-                        "My Page",
+                        "Me",
                         style: TextStyle(color: Colors.black),
                       )),
                   BottomNavigationBarItem(
@@ -77,7 +77,7 @@ class BottomNavigationState extends State<BottomNavigation> {
                         //color: Colors.yellow[900],
                       ),
                       title: Text(
-                        "Party",
+                        "Free now",
                         style: TextStyle(color: Colors.black),
                       )),
                   BottomNavigationBarItem(

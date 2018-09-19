@@ -111,7 +111,10 @@ class FriendsState extends State<Friends> {
           onTap: () {
             setId(id.toString()).then((onValue) {
               print(friendId);
-              mainBottomSheet(context, friendId, name);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FriendProfile(friendId)));
             });
           },
         );
@@ -126,7 +129,10 @@ class FriendsState extends State<Friends> {
           onTap: () {
             setId(id.toString()).then((onValue) {
               print(friendId);
-              mainBottomSheet(context, friendId, name);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FriendProfile(friendId)));
             });
           },
         );
@@ -227,6 +233,7 @@ class FriendsState extends State<Friends> {
     );
   }
 
+  //The bottom sheet function for the list tile onTap Property
   mainBottomSheet(BuildContext context, String id, String name) {
     showModalBottomSheet(
         context: context,

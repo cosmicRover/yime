@@ -119,7 +119,7 @@ class FreeNowState extends State<FreeNow> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Now Free: $onlineFriends",
+                  "Free Now: $onlineFriends",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -146,14 +146,17 @@ class FreeNowState extends State<FreeNow> {
                                       ),
                                       title: Text(snapshot.data[index].name),
                                       subtitle: Text(
-                                          snapshot.data[index].id.toString()),
+                                          snapshot.data[index].phonenumber),
                                       onTap: () {
                                         setId(snapshot.data[index].id
                                                 .toString())
                                             .then((onValue) {
                                           print(friendId);
-                                          mainBottomSheet(context, friendId,
-                                              snapshot.data[index].name);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FriendProfile(friendId)));
                                         });
                                       }, //id being passed for profile request
                                     ),
@@ -201,8 +204,7 @@ class FreeNowState extends State<FreeNow> {
     );
   }
 
-  //takes context and int id from snapshot
-  //can this be used to set state on schedule page??
+  //The bottom sheet function for the list tile onTap Property
   mainBottomSheet(BuildContext context, String id, String name) {
     showModalBottomSheet(
         context: context,

@@ -64,6 +64,7 @@ class FriendProfile extends StatefulWidget {
 
 class _FriendProfileState extends State<FriendProfile> {
   var cardStyle = TextStyle(fontWeight: FontWeight.bold);
+  var cardStyleWhite=TextStyle(fontWeight: FontWeight.bold, color: Colors.white);
 
   buildCard(BuildContext context, String day, List hours) {
     if (hours.length == 0) {
@@ -99,10 +100,10 @@ class _FriendProfileState extends State<FriendProfile> {
       return Card(
         color: Colors.green,
         child: ListTile(
-          title: Text(day),
+          title: Text(day, style: cardStyleWhite,),
           subtitle: Text(
             transForm,
-            style: cardStyle,
+            style: cardStyleWhite,
           ),
         ),
       );

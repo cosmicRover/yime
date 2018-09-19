@@ -17,8 +17,7 @@ class _ChangeNameState extends State<ChangeName> {
   String name;
   static String accessToken;
   static String authCode;
-  static const _serviceUrl =
-      'https://yime.herokuapp.com/api/me';
+  static const _serviceUrl = 'https://yime.herokuapp.com/api/me';
   static final _headers = {
     'Authorization': authCode,
     'Content-Type': 'application/json'
@@ -33,15 +32,15 @@ class _ChangeNameState extends State<ChangeName> {
     final FormState form = _formKey.currentState;
 
     if (!form.validate()) {
-      showErrMessage('Invalid! Number must be 10 digits long.', Colors.red);
+      showErrMessage('Invalid Name! ', Colors.red);
     } else {
       form.save();
       try {
         var mapData = new Map();
         mapData["name"] = name;
         var data = json.encode(mapData);
-        final response =
-        await http.post(Uri.encodeFull(_serviceUrl), headers: _headers, body: data);
+        final response = await http.post(Uri.encodeFull(_serviceUrl),
+            headers: _headers, body: data);
         var c = response.statusCode;
         print("response is $c");
         return c;
@@ -79,50 +78,49 @@ class _ChangeNameState extends State<ChangeName> {
               padding: const EdgeInsets.all(8.0),
               child: SafeArea(
                   child: Form(
-                    key: _formKey,
-                    autovalidate: true,
-                    child: ListView(children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Enter your new name',
-                          labelText: 'Name',
-                        ),
-                        keyboardType: TextInputType.text,
-                        validator: (txt) => txt.length < 3
-                            ? 'Name requires at least three characters'
-                            : null,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        onSaved: (txt) => name=txt,
-                      ),
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: FlatButton.icon(
-                              onPressed:()=> _submitForm().then((onValue){
-                                if(onValue== 200){
+                key: _formKey,
+                autovalidate: true,
+                child: ListView(children: <Widget>[
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Enter your new name',
+                      labelText: 'Name',
+                    ),
+                    keyboardType: TextInputType.text,
+                    validator: (txt) => txt.length < 3
+                        ? 'Name requires at least three characters'
+                        : null,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    onSaved: (txt) => name = txt,
+                  ),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: FlatButton.icon(
+                          onPressed: () => _submitForm().then((onValue) {
+                                if (onValue == 200) {
                                   showErrMessage("Name Updated", Colors.green);
+                                } else {
+                                  showErrMessage(
+                                      "Something went wrong", Colors.red);
                                 }
-                                else{
-                                  showErrMessage("Something went wrong", Colors.red);
-                                }
-
                               }),
-                              icon: Icon(
-                                Icons.send,
-                              ),
-                              label: Text("Update name")),
-                        ),
-                      )
-                    ]),
-                  ))),
+                          icon: Icon(
+                            Icons.send,
+                          ),
+                          label: Text("Update name")),
+                    ),
+                  )
+                ]),
+              ))),
         ),
       ),
     );
   }
 
-  Future<dynamic>checkUser() async{
+  Future<dynamic> checkUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     accessToken = prefs.getString("accesstoken");
     print("accesstoken retreived");
