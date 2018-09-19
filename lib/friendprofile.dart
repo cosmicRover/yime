@@ -71,7 +71,7 @@ class _FriendProfileState extends State<FriendProfile> {
         child: ListTile(
           title: Text(day),
           subtitle: Text(
-            "No free time today",
+            "Not free today",
             style: cardStyle,
           ),
         ),
