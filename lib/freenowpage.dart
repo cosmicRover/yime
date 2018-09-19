@@ -119,7 +119,7 @@ class FreeNowState extends State<FreeNow> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Now Free: $onlineFriends",
+                  "Free Now: $onlineFriends",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
