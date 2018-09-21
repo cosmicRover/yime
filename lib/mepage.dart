@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,9 +42,15 @@ Future<Post> fetchPost() async {
 }
 
 class Post {
-  final String name, phonenumber, timezone, today, tomorrow;
+  final String name, phonenumber, timezone, today, tomorrow, shareLink;
 
-  Post({this.name, this.phonenumber, this.timezone, this.today, this.tomorrow});
+  Post(
+      {this.name,
+      this.phonenumber,
+      this.timezone,
+      this.today,
+      this.tomorrow,
+      this.shareLink});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -51,7 +58,8 @@ class Post {
         phonenumber: json['phonenumber'],
         timezone: json['timezone'],
         today: json['today'],
-        tomorrow: json['tomorrow']);
+        tomorrow: json['tomorrow'],
+        shareLink: json['shareLink']);
   }
 }
 
@@ -75,6 +83,15 @@ class MeState extends State<Me> {
       print('not connected');
       return "not connectted";
     }
+  }
+
+  Future<dynamic> setData(ClipboardData data) async {
+    await SystemChannels.platform.invokeMethod(
+      'Clipboard.setData',
+      <String, dynamic>{
+        'text': data.text,
+      },
+    );
   }
 
   void showErrMessage(String message, Color c) {
@@ -203,6 +220,22 @@ class MeState extends State<Me> {
                                           DisplayFriendRequest())),
                               child: Text(
                                 "Friend requests",
+                                style: buttonStyle,
+                              )),
+                          Divider(
+                            height: 10.0,
+                          ),
+                          FlatButton(
+                              onPressed: () {
+                                setData(ClipboardData(
+                                        text:
+                                            "https://yime.app/u/url/${snapshot.data.shareLink}"))
+                                    .then((onValue) {
+                                  showErrMessage("Copied!", Colors.green);
+                                });
+                              },
+                              child: Text(
+                                "Copy your schedule url",
                                 style: buttonStyle,
                               ))
                         ],

@@ -31,6 +31,8 @@ class _YimeState extends State<Yime> {
         '/bottomnav': (context) => BottomNavigation(),
       },
       home: IntroPage(),
+      //disabling the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 }
