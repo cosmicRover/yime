@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_sms/flutter_sms.dart';
+
 
 class FriendRequest extends StatefulWidget {
   @override
@@ -14,7 +16,7 @@ class FriendRequest extends StatefulWidget {
 class _FriendRequestState extends State<FriendRequest> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String phoneNumber;
+  var phoneNumber;
   static String accessToken;
   static String authCode;
   static const _serviceUrl =
@@ -42,12 +44,14 @@ class _FriendRequestState extends State<FriendRequest> {
         var data = json.encode(mapData);
         final response =
         await http.post(Uri.encodeFull(_serviceUrl), headers: _headers, body: data);
-        var c = response.statusCode;
-        print("response is $c");
-        return c;
+        var d= response.statusCode;
+        print(d);
+        var e= jsonDecode(response.body);
+        print(e);
+        return e;
       } catch (e) {
         print('Server Exception!!! on getinfo ');
-        print(e);
+        //print(e);
         return e;
       }
     }
@@ -82,6 +86,8 @@ class _FriendRequestState extends State<FriendRequest> {
                 key: _formKey,
                 autovalidate: true,
                 child: ListView(children: <Widget>[
+                  Center(child: Text("Let's add some freinds!", style:
+                  TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0))),
                   TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Enter the phone number',
@@ -101,11 +107,11 @@ class _FriendRequestState extends State<FriendRequest> {
                       padding: const EdgeInsets.all(15.0),
                       child: FlatButton.icon(
                           onPressed:()=> _submitForm().then((onValue){
-                            if(onValue== 200){
-                              showErrMessage("Request sent!", Colors.green);
+                            if(onValue.toString() =='{userExists: false}'){
+                              displayDialogue();
                             }
                             else{
-                              showErrMessage("Something went wrong", Colors.red);
+                              showErrMessage(onValue['message'].toString(), Colors.brown);
                             }
 
                           }),
@@ -131,4 +137,39 @@ class _FriendRequestState extends State<FriendRequest> {
     print(authCode);
     return authCode;
     }
+
+  void displayDialogue() {
+    //show dialogue will build an alert dialogue
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Friend not found!"),
+            content: Text("Would you like to invite?"),
+            //the actions of the alert dialogue
+            actions: <Widget>[
+              FlatButton(
+                  //on pressed sends text
+                  onPressed: () {
+                    _sendSMS("Hey! Won't you join me on yime.app ?", ["$phoneNumber"]);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Yes")),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("No"))
+            ],
+          );
+        });
+  }
+  //sends text!
+  Future<dynamic> _sendSMS(String message, List<String> recipents) async {
+    String _result =
+    await FlutterSms.sendSMS(message: message, recipients: recipents);
+    //setState(() => _message = _result);
+    print(_result);
+  }
+
 }

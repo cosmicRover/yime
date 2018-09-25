@@ -1102,20 +1102,21 @@ class SetScheduleState extends State<SetSchedule> {
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
-                    submitHours().then((onValue){
-                      if(onValue == 200){
+                    submitHours().then((onValue) {
+                      if (onValue == 200) {
                         showErrMessage("Submitted!", Colors.green);
-                      }
-                      else {
-                        showErrMessage("Something went wrong, try later", Colors.red);
+                      } else {
+                        showErrMessage(
+                            "Something went wrong, try later", Colors.red);
                       }
                       Navigator.pop(context);
                     });
                   },
                   child: Text("Yes")),
-              FlatButton(onPressed: (){
-                Navigator.pop(context);
-              },
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Text("No"))
             ],
           );
@@ -1167,14 +1168,13 @@ class SetScheduleState extends State<SetSchedule> {
       'Authorization': authCode,
       'Content-Type': 'application/json'
     };
-    try{
+    try {
       final response =
-      await http.post(_serviceUrl, headers: _headers, body: data);
+          await http.post(_serviceUrl, headers: _headers, body: data);
       var c = response.statusCode;
       print(c);
       return c;
-    }
-    catch (e){
+    } catch (e) {
       print(e);
       return e;
     }

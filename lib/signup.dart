@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import 'logdetails.dart'; //for the login phone number
 import 'submitlog.dart'; //this is to submit stuff to api
-import 'bottomnav.dart';
 
 SignUpDetails newSignup = SignUpDetails();
 //creating a handler for SignUpDetails()
@@ -79,6 +78,12 @@ class _SignUpState extends State<SignUp> {
                     autovalidate: true,
                     child: ListView(
                       children: <Widget>[
+                        Center(
+                            child: Text(
+                              "New Here, Eh?",
+                              style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+                            )),
                         TextFormField(
                           decoration: InputDecoration(
                             hintText: 'Enter the code',
@@ -104,7 +109,7 @@ class _SignUpState extends State<SignUp> {
                               ? 'Name requires at least three letters'
                               : null,
                           inputFormatters: [
-                            LengthLimitingTextInputFormatter(10),
+                            LengthLimitingTextInputFormatter(14),
                           ],
                           onSaved: (name) => newSignup.name = name,
                         ),

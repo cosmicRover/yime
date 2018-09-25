@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:badge/badge.dart';
 
 import './logout.dart';
 import './schedule.dart';
@@ -43,6 +44,7 @@ Future<Post> fetchPost() async {
 
 class Post {
   final String name, phonenumber, timezone, today, tomorrow, shareLink;
+  final int friendRequestCounter;
 
   Post(
       {this.name,
@@ -50,7 +52,8 @@ class Post {
       this.timezone,
       this.today,
       this.tomorrow,
-      this.shareLink});
+      this.shareLink,
+      this.friendRequestCounter});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -59,6 +62,7 @@ class Post {
         timezone: json['timezone'],
         today: json['today'],
         tomorrow: json['tomorrow'],
+        friendRequestCounter: json['friendRequestCounter'],
         shareLink: json['shareLink']);
   }
 }
@@ -212,16 +216,25 @@ class MeState extends State<Me> {
                           Divider(
                             height: 10.0,
                           ),
-                          FlatButton(
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DisplayFriendRequest())),
-                              child: Text(
-                                "Friend requests",
-                                style: buttonStyle,
-                              )),
+                          Center(
+                            child: Badge.right(
+                              child: FlatButton(
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DisplayFriendRequest())),
+                                  child: Text(
+                                    "Friend requests",
+                                    style: buttonStyle,
+                                  )),
+                              value: snapshot.data.friendRequestCounter.toString(),
+                              color: Colors.yellow[700],
+                              positionTop: 0.0,
+                              positionLeft: 120.0,
+                              textStyle: TextStyle(color: Colors.black),
+                            ),
+                          ),
                           Divider(
                             height: 10.0,
                           ),
