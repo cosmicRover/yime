@@ -1,16 +1,7 @@
-import './pages/mepage.dart';
-import './pages/freenowpage.dart';
-import './pages/friendspage.dart';
+
 import './pages/bottomnav.dart';
-import './pages/login.dart';
-import './pages/logout.dart';
-import './pages/entercode.dart';
-import './pages/signup.dart';
-import './pages/submitlog.dart';
 import './pages/intropage.dart';
-import './pages/mepage.dart';
 import './pages/schedule.dart';
-import './pages/friendprofile.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,6 +19,7 @@ class _YimeState extends State<Yime> {
     return MaterialApp(
       title: 'Yime',
       routes: {
+        '/schedule': (context) => SetSchedule(),
         '/bottomnav': (context) => BottomNavigation(),
       },
       home: IntroPage(),

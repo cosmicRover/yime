@@ -91,7 +91,7 @@ class _ChangeNameState extends State<ChangeName> {
                         ? 'Name requires at least three characters'
                         : null,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
+                      LengthLimitingTextInputFormatter(14),
                     ],
                     onSaved: (txt) => name = txt,
                   ),

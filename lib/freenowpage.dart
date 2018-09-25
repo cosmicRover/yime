@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import './friendprofile.dart';
 import './friendrequest.dart';
+import './schedule.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class FreeNow extends StatefulWidget {
@@ -18,18 +20,19 @@ class FreeNow extends StatefulWidget {
 class User {
   String name, phonenumber;
   int id;
-  //bool admin;
-  //custom defined constructor referencing all of it's defined variables
   User({this.name, this.id, this.phonenumber});
 }
 
 //getting the json data from the api
 class FreeNowState extends State<FreeNow> {
-  //var passId = new FriendProfile();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   static String accessToken;
   static String authCode;
   var onlineFriends = 0;
+  var scheduleChecker = -1;
+  bool scheduleStopper = false;
+  String friendId;
 
   static const _serviceUrl =
       'https://yime.herokuapp.com/api/available'; //schedule, available, friend and me(coming soon)
@@ -65,6 +68,34 @@ class FreeNowState extends State<FreeNow> {
     }
   }
 
+  //get's schedule information
+  Future<dynamic> measureScheduleLength() async {
+    try {
+      final responseSchedule = await http.get(
+          Uri.encodeFull('https://yime.herokuapp.com/api/me'),
+          headers: _headers);
+      var d = jsonDecode(responseSchedule.body);
+      d = d['schedule'];
+      d = d['monday'].length +
+          d['tuesday'].length +
+          d['wednesday'].length +
+          d['thursday'].length +
+          d['friday'].length +
+          d['saturday'].length +
+          d['sunday'].length;
+      scheduleChecker = d;
+      print("Schedule is $d");
+      if (scheduleChecker == 0) {
+        showErrMessage("Your schedule is empty!", Colors.red);
+      }
+      return scheduleChecker;
+    } catch (e) {
+      print('Server Exception!!! on getinfo ');
+      print(e);
+      return e;
+    }
+  }
+
   var addedOnline = false;
 //creating a list of users with three values retrieved from api
   List<User> createUserList(List data) {
@@ -86,10 +117,48 @@ class FreeNowState extends State<FreeNow> {
     return list;
   }
 
-  String friendId;
   Future<dynamic> setId(String x) async {
     friendId = x;
     return friendId;
+  }
+
+  void showErrMessage(String message, Color c) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      backgroundColor: c,
+      content: Text(message),
+      duration: Duration(seconds: 5),
+      action: SnackBarAction(
+          label: "Set Schedule!",
+          onPressed: () {
+            checkConnection().then((onValue) {
+              if (onValue == "connected") {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SetSchedule()));
+              } else {
+                showErrMessage(
+                    "Internet connection lost! Connect and try again",
+                    Colors.red);
+              }
+            });
+          }),
+      //duration: Duration(),
+    ));
+  }
+
+  //checks if connected to the internet
+  //temporary fix for messy schedule page
+  //remove once fixed
+  Future<dynamic> checkConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        return "connected";
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      return "not connectted";
+    }
   }
 
   @override
@@ -101,6 +170,7 @@ class FreeNowState extends State<FreeNow> {
             canvasColor: Colors.white,
             splashColor: Colors.yellow),
         child: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text("Yime"),
             actions: <Widget>[
@@ -114,90 +184,101 @@ class FreeNowState extends State<FreeNow> {
                   ))
             ],
           ),
-          body: Stack(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Free Now: $onlineFriends",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 8.0),
-                child: Container(
-                  //future builder takes same parameter as http.get function
-                  child: FutureBuilder<List<User>>(
-                    future: fetchUsersFromGitHub(), //calling the fetch function
-                    builder: (context, snapshot) {
-                      //builder takes context and snapshot
-                      if (snapshot.hasData) {
-                        //if the snapshot contains data
-                        return ListView.builder(
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                      ),
-                                      title: Text(snapshot.data[index].name),
-                                      subtitle: Text(
-                                          snapshot.data[index].phonenumber),
-                                      onTap: () {
-                                        setId(snapshot.data[index].id
-                                                .toString())
-                                            .then((onValue) {
-                                          print(friendId);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FriendProfile(friendId)));
-                                        });
-                                      }, //id being passed for profile request
-                                    ),
-                                    //Divider()
-                                  ]);
-                            });
-                      } else if (snapshot.hasError) {
-                        //if the snapshot has error
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Are you connected to the internet?",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28.0),
-                              ),
-                            ),
-                            FlatButton.icon(
-                                onPressed: () {
-                                  setState(() {
-                                    fetchUsersFromGitHub();
-                                  });
-                                },
-                                icon: Icon(Icons.refresh),
-                                label: Text("Tap to refresh"))
-                          ],
-                        );
-                      }
-                      // By default, show a linear progress indicator
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: LinearProgressIndicator(),
-                      );
-                    },
+          body: SafeArea(
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Free Now: $onlineFriends",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0, left: 8.0),
+                  child: Container(
+                    //future builder takes same parameter as http.get function
+                    child: FutureBuilder<List<User>>(
+                      future:
+                          fetchUsersFromGitHub(), //calling the fetch function
+                      builder: (context, snapshot) {
+                        //builder takes context and snapshot
+                        if (snapshot.hasData) {
+                          //calling to measure schedule
+                          //if statement prevents schedule from displaying twice
+                          if (scheduleStopper == false) {
+                            measureScheduleLength();
+                            scheduleStopper = true;
+                          }
+                          //if the snapshot contains data
+                          return ListView.builder(
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green,
+                                        ),
+                                        title: Text(snapshot.data[index].name),
+                                        subtitle: Text(
+                                            snapshot.data[index].phonenumber),
+                                        onTap: () {
+                                          setId(snapshot.data[index].id
+                                                  .toString())
+                                              .then((onValue) {
+                                            print(friendId);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FriendProfile(
+                                                            friendId)));
+                                          });
+                                        }, //id being passed for profile request
+                                      ),
+                                      //Divider()
+                                    ]);
+                              });
+                        } else if (snapshot.hasError) {
+                          //if the snapshot has error
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Are you connected to the internet?",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 28.0),
+                                ),
+                              ),
+                              FlatButton.icon(
+                                  onPressed: () {
+                                    setState(() {
+                                      fetchUsersFromGitHub();
+                                    });
+                                  },
+                                  icon: Icon(Icons.refresh),
+                                  label: Text("Tap to refresh"))
+                            ],
+                          );
+                        }
+                        // By default, show a linear progress indicator
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: LinearProgressIndicator(),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

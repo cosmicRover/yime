@@ -78,6 +78,12 @@ class _EnterCodeState extends State<EnterCode> {
                     autovalidate: true,
                     child: ListView(
                       children: <Widget>[
+                        Center(
+                            child: Text(
+                              "Welcome back!",
+                              style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+                            )),
                         TextFormField(
                           decoration: InputDecoration(
                             hintText: 'Enter the code',
