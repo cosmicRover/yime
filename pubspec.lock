@@ -29,6 +29,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  auto_size_text:
+    dependency: "direct dev"
+    description:
+      name: auto_size_text
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
+  badge:
+    dependency: "direct dev"
+    description:
+      name: badge
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -99,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.1"
+  flutter_sms:
+    dependency: "direct dev"
+    description:
+      name: flutter_sms
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -244,6 +265,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.2"
+  path_provider:
+    dependency: "direct dev"
+    description:
+      name: path_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   petitparser:
     dependency: transitive
     description:
@@ -382,6 +410,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
+  url_launcher:
+    dependency: "direct dev"
+    description:
+      name: url_launcher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   utf:
     dependency: transitive
     description:
@@ -411,7 +446,7 @@ packages:
     source: hosted
     version: "0.9.7+10"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: web_socket_channel
       url: "https://pub.dartlang.org"
@@ -432,5 +467,5 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.0.0 <=2.1.0-dev.3.1.flutter-760a9690c2"
-  flutter: ">=0.1.4 <2.0.0"
+  dart: ">=2.0.0 <=2.1.0-dev.5.0.flutter-a2eb050044"
+  flutter: ">=0.5.6 <2.0.0"
