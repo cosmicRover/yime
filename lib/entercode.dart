@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 
 import 'logdetails.dart'; //for the login phone number
 import 'submitlog.dart'; //this is to submit stuff to api
+import 'saveaccesscode.dart';
 
 EnterCodeLoginDetails newCodeLogin = EnterCodeLoginDetails();
-SaveLoadAccessToken saveKey = SaveLoadAccessToken();
+AcCodeStorage saveKey = AcCodeStorage();
 //creating a handler for EnterCodeDetails()
 String globalToken;
 
@@ -40,8 +41,7 @@ class _EnterCodeState extends State<EnterCode> {
         if (value == "error" || value == null || value == 'failed') {
           showErrMessage('Error! Please retry');
         } else {
-          saveKey.savedTokenPreference(value).then((onValue) {
-            //saving key and pushing to a new screen with no back
+          saveKey.writeAcCode(value).then((onValue){
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/bottomnav', (Route<dynamic> route) => false);
           });

@@ -5,13 +5,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:badge/badge.dart';
 
 import './logout.dart';
 import './schedule.dart';
 import './displayrequests.dart';
 import './changename.dart';
+import './saveaccesscode.dart';
 
 String accessToken;
 String authCode;
@@ -20,13 +20,11 @@ final _headers = {
   'Authorization': authCode,
   'Content-Type': 'application/json'
 };
+AcCodeStorage saveKey = AcCodeStorage();
 
 Future<Post> fetchPost() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  accessToken = prefs.getString("accesstoken");
-  print("accesstoken retreived");
-  authCode =
-      'Bearer ' + accessToken; //adding bearer to accesscode for security reason
+  accessToken = await saveKey.readAcCode();
+  authCode = 'Bearer '+accessToken; //adding bearer to accesscode for security reason
   print(authCode);
 
   final response =
@@ -189,7 +187,7 @@ class MeState extends State<Me> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                SetSchedule()));
+                                                SetSchedule(authCode)));
                                   } else {
                                     showErrMessage(
                                         "Are you connected to the internet",
@@ -208,7 +206,7 @@ class MeState extends State<Me> {
                               onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ChangeName())),
+                                      builder: (context) => ChangeName(authCode))),
                               child: Text(
                                 "Change your name",
                                 style: buttonStyle,
@@ -223,7 +221,7 @@ class MeState extends State<Me> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              DisplayFriendRequest())),
+                                              DisplayFriendRequest(authCode))),
                                   child: Text(
                                     "Friend requests",
                                     style: buttonStyle,

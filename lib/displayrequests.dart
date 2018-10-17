@@ -6,7 +6,24 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
+
+String accessToken;
+String authCode;
+var requests = 0;
+
+String _serviceUrl =
+    'https://yime.herokuapp.com/api/friendrequest'; //schedule, available, friend and me(coming soon)
+final _headers = {
+  'Authorization': authCode,
+  'Content-Type': 'application/json'
+};
+
 class DisplayFriendRequest extends StatefulWidget {
+
+  DisplayFriendRequest(String x){
+    authCode = x;
+  }
+
   @override
   DisplayFriendRequestState createState() => new DisplayFriendRequestState();
 }
@@ -21,24 +38,8 @@ class User {
 //getting the json data from the api
 class DisplayFriendRequestState extends State<DisplayFriendRequest> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  static String accessToken;
-  static String authCode;
-  var requests = 0;
-
-  static const _serviceUrl =
-      'https://yime.herokuapp.com/api/friendrequest'; //schedule, available, friend and me(coming soon)
-  static final _headers = {
-    'Authorization': authCode,
-    'Content-Type': 'application/json'
-  };
 
   Future<List<User>> fetchUsersFromGitHub() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
-    print(authCode);
     try {
       final response =
           await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);

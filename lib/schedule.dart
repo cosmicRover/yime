@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import 'dart:async';
 import 'dart:convert';
+import 'saveaccesscode.dart';
+
+String accessToken;
+String authCode;
+
+String _serviceUrl =
+    'https://yime.herokuapp.com/api/schedule'; //schedule, available, friend and me(coming soon)
+final _headers = {
+  'Authorization': authCode,
+  'Content-Type': 'application/json'
+};
+
+AcCodeStorage saveKey = AcCodeStorage();
 
 class SetSchedule extends StatefulWidget {
+  SetSchedule(String x) {
+    authCode = x;
+  }
+
   @override
   SetScheduleState createState() => new SetScheduleState();
 }
 
 class SetScheduleState extends State<SetSchedule> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  static String accessToken;
-  static String authCode;
   List days = [
     'monday',
     'tuesday',
@@ -33,13 +47,6 @@ class SetScheduleState extends State<SetSchedule> {
   List<bool> sunHours = List(24);
 
   Map<String, bool> monMap, tueMap, wedMap, thuMap, friMap, satMap, sunMap;
-
-  static const _serviceUrl =
-      'https://yime.herokuapp.com/api/schedule'; //schedule, available, friend and me(coming soon)
-  static final _headers = {
-    'Authorization': authCode,
-    'Content-Type': 'application/json'
-  };
 
   void showErrMessage(String message, Color c) {
     _scaffoldKey.currentState
@@ -313,16 +320,6 @@ class SetScheduleState extends State<SetSchedule> {
 
   var hasAccessCode = false;
   Future<dynamic> checkUser() async {
-    if (hasAccessCode == false) {
-      //calling shared pref plugin and getString()
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      accessToken = prefs.getString("accesstoken");
-      print("accesstoken retreived");
-      authCode = 'Bearer ' +
-          accessToken; //adding bearer to accesscode for security reason
-      print(authCode);
-      hasAccessCode = true;
-    }
     await getInfo();
     return getInfo();
     //calling the http.get function

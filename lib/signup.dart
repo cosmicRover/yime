@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 
 import 'logdetails.dart'; //for the login phone number
 import 'submitlog.dart'; //this is to submit stuff to api
+import 'saveaccesscode.dart';
 
 SignUpDetails newSignup = SignUpDetails();
 //creating a handler for SignUpDetails()
-SaveLoadAccessToken saveKey = SaveLoadAccessToken();
+AcCodeStorage saveKey = AcCodeStorage();
 String globalToken;
 
 class SignUp extends StatefulWidget {
@@ -40,8 +41,7 @@ class _SignUpState extends State<SignUp> {
         if (value == "error" || value == null || value == 'failed') {
           showErrMessage('Enter the correct code please!');
         } else {
-          saveKey.savedTokenPreference(value).then((onValue) {
-            //saving key and pushing to a new screen with no back
+          saveKey.writeAcCode(value).then((onValue){
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/bottomnav', (Route<dynamic> route) => false);
           });

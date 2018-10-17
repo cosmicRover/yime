@@ -4,11 +4,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './friendprofile.dart';
 import './friendrequest.dart';
 import './schedule.dart';
+import './saveaccesscode.dart';
+import './wsinitial.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class FreeNow extends StatefulWidget {
@@ -31,8 +33,10 @@ class FreeNowState extends State<FreeNow> {
   static String authCode;
   var onlineFriends = 0;
   var scheduleChecker = -1;
+  int userId;
   bool scheduleStopper = false;
   String friendId;
+  AcCodeStorage saveKey = AcCodeStorage();
 
   static const _serviceUrl =
       'https://yime.herokuapp.com/api/available'; //schedule, available, friend and me(coming soon)
@@ -42,15 +46,12 @@ class FreeNowState extends State<FreeNow> {
   };
 
   Future<List<User>> fetchUsersFromGitHub() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
+    accessToken = await saveKey.readAcCode();
+    authCode = 'Bearer '+accessToken;
     print(authCode);
     try {
       final response =
-          await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
+      await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
       var c = jsonDecode(response.body);
       print(c);
       List responseJson = c;
@@ -75,6 +76,9 @@ class FreeNowState extends State<FreeNow> {
           Uri.encodeFull('https://yime.herokuapp.com/api/me'),
           headers: _headers);
       var d = jsonDecode(responseSchedule.body);
+      var e = d['id'];
+      print(e);
+      userId = e;
       d = d['schedule'];
       d = d['monday'].length +
           d['tuesday'].length +
@@ -133,7 +137,7 @@ class FreeNowState extends State<FreeNow> {
             checkConnection().then((onValue) {
               if (onValue == "connected") {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SetSchedule()));
+                    MaterialPageRoute(builder: (context) => SetSchedule(authCode)));
               } else {
                 showErrMessage(
                     "Internet connection lost! Connect and try again",
@@ -143,6 +147,11 @@ class FreeNowState extends State<FreeNow> {
           }),
       //duration: Duration(),
     ));
+  }
+
+  void showErrMessage2(String message, Color c) {
+    _scaffoldKey.currentState
+        .showSnackBar(SnackBar(backgroundColor: c, content: Text(message)));
   }
 
   //checks if connected to the internet
@@ -161,6 +170,17 @@ class FreeNowState extends State<FreeNow> {
     }
   }
 
+  //launchPhone and launchSMS is for the iconButtons
+  launchPhone(var x) async {
+    var url = 'tel:$x';
+    await launch(url);
+  }
+
+  launchSMS(var y) async {
+    var url = 'sms:$y';
+    await launch(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -176,12 +196,26 @@ class FreeNowState extends State<FreeNow> {
             actions: <Widget>[
               FlatButton.icon(
                   onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FriendRequest())),
+                      MaterialPageRoute(builder: (context) => FriendRequest(authCode))),
                   icon: Icon(Icons.person_add),
                   label: Text(
                     "Add freinds",
                     style: TextStyle(fontWeight: FontWeight.bold),
-                  ))
+                  )),
+              FlatButton(
+                child: Text("Discover!", style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: (){
+                  checkConnection().then((onValue){
+                    if(onValue.toString() == "connected"){
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => WebSocket(userId)));
+                    }
+                    else{
+                      showErrMessage2("Are you connected to the internet", Colors.red);
+                    }
+                  });
+                },
+              )
             ],
           ),
           body: SafeArea(
@@ -200,7 +234,7 @@ class FreeNowState extends State<FreeNow> {
                     //future builder takes same parameter as http.get function
                     child: FutureBuilder<List<User>>(
                       future:
-                          fetchUsersFromGitHub(), //calling the fetch function
+                      fetchUsersFromGitHub(), //calling the fetch function
                       builder: (context, snapshot) {
                         //builder takes context and snapshot
                         if (snapshot.hasData) {
@@ -216,30 +250,50 @@ class FreeNowState extends State<FreeNow> {
                               itemBuilder: (context, index) {
                                 return Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    CrossAxisAlignment.center,
                                     children: <Widget>[
                                       ListTile(
-                                        leading: Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                        ),
-                                        title: Text(snapshot.data[index].name),
-                                        subtitle: Text(
-                                            snapshot.data[index].phonenumber),
-                                        onTap: () {
-                                          setId(snapshot.data[index].id
-                                                  .toString())
-                                              .then((onValue) {
-                                            print(friendId);
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        FriendProfile(
-                                                            friendId)));
-                                          });
-                                        }, //id being passed for profile request
-                                      ),
+                                          leading: Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                          ),
+                                          title:
+                                          Text(snapshot.data[index].name),
+                                          subtitle: Text(
+                                              snapshot.data[index].phonenumber),
+                                          onTap: () {
+                                            setId(snapshot.data[index].id
+                                                .toString())
+                                                .then((onValue) {
+                                              print(friendId);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          FriendProfile(
+                                                              friendId, authCode)));
+                                            });
+                                          }, //id being passed for profile request
+                                          trailing: Wrap(
+                                            children: <Widget>[
+                                              Card(
+                                                  child: IconButton(
+                                                      icon: Icon(Icons.call),
+                                                      onPressed: () {
+                                                        launchPhone(snapshot
+                                                            .data[index]
+                                                            .phonenumber);
+                                                      })),
+                                              Card(
+                                                  child: IconButton(
+                                                      icon: Icon(Icons.textsms),
+                                                      onPressed: () {
+                                                        launchSMS(snapshot
+                                                            .data[index]
+                                                            .phonenumber);
+                                                      }))
+                                            ],
+                                          )),
                                       //Divider()
                                     ]);
                               });
@@ -300,7 +354,7 @@ class FreeNowState extends State<FreeNow> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FriendProfile(id)));
+                          builder: (context) => FriendProfile(id, authCode)));
                 },
               )
             ],

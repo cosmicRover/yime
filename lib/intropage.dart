@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:async';
 
+import 'saveaccesscode.dart';
 import 'bottomnav.dart';
 import 'login.dart';
 
+AcCodeStorage saveKey = AcCodeStorage();
 //This page decides if the user has a saved access token and navigates to
 // a different page based on that
 
@@ -64,16 +65,19 @@ class _IntroPageState extends State<IntroPage> {
   Future<Null> checkUser() async {
     //calling shared pref plugin and getString()
     String _token;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString("accesstoken");
-    //checking the token
-    if (_token == "error" || _token == null) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Login()));
-      //your home page is loaded
-    } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => BottomNavigation()));
-    }
+    saveKey.readAcCode().then((onValue) {
+      _token = onValue.toString();
+
+      if (_token == "null") {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Login()));
+        //your home page is loaded
+        print(onValue);
+      } else {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => BottomNavigation()));
+        print('else $onValue');
+      }
+    });
   }
 }

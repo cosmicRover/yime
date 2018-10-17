@@ -16,12 +16,6 @@ final _headers = {
 };
 
 Future<Post> fetchPost() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  accessToken = prefs.getString("accesstoken");
-  print("accesstoken retreived");
-  authCode =
-      'Bearer ' + accessToken; //adding bearer to accesscode for security reason
-  print(authCode);
   print("url for friend " + _serviceUrl);
   final response =
       await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
@@ -53,8 +47,9 @@ class Post {
 }
 
 class FriendProfile extends StatefulWidget {
-  FriendProfile(String x) {
+  FriendProfile(String x, y) {
     friendId = x;
+    authCode = y;
     _serviceUrl = 'https://yime.herokuapp.com/api/friend/$friendId';
   }
 

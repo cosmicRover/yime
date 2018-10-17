@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:async';
 
-import 'login.dart';
+import 'saveaccesscode.dart';
+import 'intropage.dart';
+
+AcCodeStorage saveKey = AcCodeStorage();
 
 //This page simply deletes the accesstoken of a user and directs them to Login
 
@@ -61,12 +63,8 @@ class _LogOutState extends State<LogOut> {
 
   //function that deletes the accesstoken
   Future<Null> deleteAcToken() async {
-    //calling shared pref plugin and getString()
-    //String _token;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("accesstoken");
-    print("deleted acToken");
+    await saveKey.deleteAcCode();
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Login()));
+        context, MaterialPageRoute(builder: (context) => IntroPage()));
   }
 }

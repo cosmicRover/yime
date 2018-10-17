@@ -4,9 +4,23 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+
+String name;
+String accessToken;
+String authCode;
+String _serviceUrl = 'https://yime.herokuapp.com/api/me';
+final _headers = {
+  'Authorization': authCode,
+  'Content-Type': 'application/json'
+};
+
 
 class ChangeName extends StatefulWidget {
+
+  ChangeName(String y) {
+    authCode = y;
+  }
+
   @override
   _ChangeNameState createState() => _ChangeNameState();
 }
@@ -14,14 +28,6 @@ class ChangeName extends StatefulWidget {
 class _ChangeNameState extends State<ChangeName> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String name;
-  static String accessToken;
-  static String authCode;
-  static const _serviceUrl = 'https://yime.herokuapp.com/api/me';
-  static final _headers = {
-    'Authorization': authCode,
-    'Content-Type': 'application/json'
-  };
 
   void showErrMessage(String message, Color c) {
     _scaffoldKey.currentState
@@ -51,13 +57,6 @@ class _ChangeNameState extends State<ChangeName> {
       }
     }
     return true;
-  }
-
-  //getting the accessToken ready for the post operation
-  @override
-  void initState() {
-    super.initState();
-    checkUser();
   }
 
   @override
@@ -118,15 +117,5 @@ class _ChangeNameState extends State<ChangeName> {
         ),
       ),
     );
-  }
-
-  Future<dynamic> checkUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
-    print(authCode);
-    return authCode;
   }
 }

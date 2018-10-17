@@ -3,10 +3,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './friendrequest.dart';
 import './friendprofile.dart';
+import './saveaccesscode.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class Friends extends StatefulWidget {
@@ -36,14 +37,12 @@ class FriendsState extends State<Friends> {
     'Content-Type': 'application/json'
   };
 
-  Future<List<User>> fetchUsersFromGitHub() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
-    print(authCode);
+  AcCodeStorage saveKey = AcCodeStorage();
 
+  Future<List<User>> fetchUsersFromGitHub() async {
+    accessToken = await saveKey.readAcCode();
+    authCode = 'Bearer '+accessToken; //adding bearer to accesscode for security reason
+    print(authCode);
     try {
       final response =
           await http.get(Uri.encodeFull(_serviceUrl), headers: _headers);
@@ -96,6 +95,17 @@ class FriendsState extends State<Friends> {
     return friendId;
   }
 
+  //launchPhone and launchSMS is for the iconButtons
+  launchPhone(var x) async {
+    var url = 'tel:$x';
+    await launch(url);
+  }
+
+  launchSMS(var y) async {
+    var url = 'sms:$y';
+    await launch(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     //custom widget for list tile which allows if statements
@@ -114,28 +124,60 @@ class FriendsState extends State<Friends> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => FriendProfile(friendId)));
+                      builder: (context) => FriendProfile(friendId, authCode)));
             });
           },
+          trailing: Wrap(
+            children: <Widget>[
+              Card(
+                  child: IconButton(
+                      icon: Icon(Icons.call),
+                      onPressed: () {
+                        launchPhone(phone);
+                      })),
+              Card(
+                  child: IconButton(
+                      icon: Icon(Icons.textsms),
+                      onPressed: () {
+                        launchSMS(phone);
+                      }))
+            ],
+          ),
         );
       } else {
         return ListTile(
-          leading: Icon(
-            Icons.person,
-            color: Colors.yellow[700],
-          ),
-          title: Text(name),
-          subtitle: Text(phone),
-          onTap: () {
-            setId(id.toString()).then((onValue) {
-              print(friendId);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FriendProfile(friendId)));
-            });
-          },
-        );
+            leading: Icon(
+              Icons.person,
+              color: Colors.yellow[700],
+            ),
+            title: Text(name),
+            subtitle: Text(phone),
+            onTap: () {
+              setId(id.toString()).then((onValue) {
+                print(friendId);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FriendProfile(friendId, authCode)));
+              });
+            },
+            //call or text the users
+            trailing: Wrap(
+              children: <Widget>[
+                Card(
+                    child: IconButton(
+                        icon: Icon(Icons.call),
+                        onPressed: () {
+                          launchPhone(phone);
+                        })),
+                Card(
+                    child: IconButton(
+                        icon: Icon(Icons.textsms),
+                        onPressed: () {
+                          launchSMS(phone);
+                        }))
+              ],
+            ));
       }
     }
 
@@ -151,7 +193,7 @@ class FriendsState extends State<Friends> {
             actions: <Widget>[
               FlatButton.icon(
                   onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FriendRequest())),
+                      MaterialPageRoute(builder: (context) => FriendRequest(authCode))),
                   icon: Icon(Icons.person_add),
                   label: Text(
                     "Add freinds",
@@ -248,7 +290,7 @@ class FriendsState extends State<Friends> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FriendProfile(id)));
+                          builder: (context) => FriendProfile(id, authCode)));
                 },
               )
             ],

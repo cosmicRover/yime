@@ -4,11 +4,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_sms/flutter_sms.dart';
+
+var phoneNumber;
+String accessToken;
+String authCode;
+String _serviceUrl =
+    'https://yime.herokuapp.com/api/friendrequest/create'; //schedule, available, friend and me(coming soon)
+final _headers = {
+  'Authorization': authCode,
+  'Content-Type': 'application/json'
+};
 
 
 class FriendRequest extends StatefulWidget {
+  FriendRequest(String x){
+    authCode = x;
+  }
+
   @override
   _FriendRequestState createState() => _FriendRequestState();
 }
@@ -16,15 +29,6 @@ class FriendRequest extends StatefulWidget {
 class _FriendRequestState extends State<FriendRequest> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  var phoneNumber;
-  static String accessToken;
-  static String authCode;
-  static const _serviceUrl =
-      'https://yime.herokuapp.com/api/friendrequest/create'; //schedule, available, friend and me(coming soon)
-  static final _headers = {
-    'Authorization': authCode,
-    'Content-Type': 'application/json'
-  };
 
   void showErrMessage(String message, Color c) {
     _scaffoldKey.currentState
@@ -56,13 +60,6 @@ class _FriendRequestState extends State<FriendRequest> {
       }
     }
     return true;
-  }
-
-  //getting the accessToken ready for the post operation
-  @override
-  void initState() {
-    super.initState();
-    checkUser();
   }
 
   @override
@@ -127,16 +124,6 @@ class _FriendRequestState extends State<FriendRequest> {
       ),
     );
   }
-
-  Future<dynamic>checkUser() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    accessToken = prefs.getString("accesstoken");
-    print("accesstoken retreived");
-    authCode = 'Bearer ' +
-        accessToken; //adding bearer to accesscode for security reason
-    print(authCode);
-    return authCode;
-    }
 
   void displayDialogue() {
     //show dialogue will build an alert dialogue
