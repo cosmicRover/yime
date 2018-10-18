@@ -10,7 +10,6 @@ import './friendprofile.dart';
 import './friendrequest.dart';
 import './schedule.dart';
 import './saveaccesscode.dart';
-import './wsinitial.dart';
 
 //In this page, I'm attempting to retrieve all the friends that are online
 class FreeNow extends StatefulWidget {
@@ -202,20 +201,6 @@ class FreeNowState extends State<FreeNow> {
                     "Add freinds",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )),
-              FlatButton(
-                child: Text("Discover!", style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: (){
-                  checkConnection().then((onValue){
-                    if(onValue.toString() == "connected"){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => WebSocket(userId)));
-                    }
-                    else{
-                      showErrMessage2("Are you connected to the internet", Colors.red);
-                    }
-                  });
-                },
-              )
             ],
           ),
           body: SafeArea(

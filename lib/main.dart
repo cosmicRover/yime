@@ -1,6 +1,6 @@
 import './pages/bottomnav.dart';
 import './pages/freenowpage.dart';
-import './pages/wsinitial.dart';
+import './pages/intropage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +21,7 @@ class _YimeState extends State<Yime> {
         '/bottomnav': (context) => BottomNavigation(),
         '/freenow': (context) => FreeNow(),
       },
-      home: BottomNavigation(),
+      home: IntroPage(),
       //disabling the debug banner
       debugShowCheckedModeBanner: false,
     );

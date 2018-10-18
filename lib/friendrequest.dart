@@ -16,9 +16,8 @@ final _headers = {
   'Content-Type': 'application/json'
 };
 
-
 class FriendRequest extends StatefulWidget {
-  FriendRequest(String x){
+  FriendRequest(String x) {
     authCode = x;
   }
 
@@ -46,11 +45,11 @@ class _FriendRequestState extends State<FriendRequest> {
         var mapData = new Map();
         mapData["phonenumber"] = phoneNumber;
         var data = json.encode(mapData);
-        final response =
-        await http.post(Uri.encodeFull(_serviceUrl), headers: _headers, body: data);
-        var d= response.statusCode;
+        final response = await http.post(Uri.encodeFull(_serviceUrl),
+            headers: _headers, body: data);
+        var d = response.statusCode;
         print(d);
-        var e= jsonDecode(response.body);
+        var e = jsonDecode(response.body);
         print(e);
         return e;
       } catch (e) {
@@ -83,8 +82,10 @@ class _FriendRequestState extends State<FriendRequest> {
                 key: _formKey,
                 autovalidate: true,
                 child: ListView(children: <Widget>[
-                  Center(child: Text("Let's add some freinds!", style:
-                  TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0))),
+                  Center(
+                      child: Text("Let's add some freinds!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 25.0))),
                   TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Enter the phone number',
@@ -97,21 +98,26 @@ class _FriendRequestState extends State<FriendRequest> {
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(10),
                     ],
-                    onSaved: (num) => phoneNumber=num,
+                    onSaved: (num) => phoneNumber = num,
                   ),
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: FlatButton.icon(
-                          onPressed:()=> _submitForm().then((onValue){
-                            if(onValue.toString() =='{userExists: false}'){
-                              displayDialogue();
-                            }
-                            else{
-                              showErrMessage(onValue['message'].toString(), Colors.brown);
-                            }
-
-                          }),
+                          onPressed: () => _submitForm().then((onValue) {
+                                if (onValue.toString() ==
+                                    '{userExists: false}') {
+                                  displayDialogue();
+                                } else {
+                                  if (onValue['message'] == "null") {
+                                    showErrMessage("Sent!", Colors.black);
+                                  } else {
+                                    showErrMessage(
+                                        onValue['message'].toString(),
+                                        Colors.black);
+                                  }
+                                }
+                              }),
                           icon: Icon(
                             Icons.send,
                           ),
@@ -138,7 +144,8 @@ class _FriendRequestState extends State<FriendRequest> {
               FlatButton(
                   //on pressed sends text
                   onPressed: () {
-                    _sendSMS("Hey! Won't you join me on yime.app ?", ["$phoneNumber"]);
+                    _sendSMS("Hey! Won't you join me on yime.app ?",
+                        ["$phoneNumber"]);
                     Navigator.pop(context);
                   },
                   child: Text("Yes")),
@@ -151,12 +158,12 @@ class _FriendRequestState extends State<FriendRequest> {
           );
         });
   }
+
   //sends text!
   Future<dynamic> _sendSMS(String message, List<String> recipents) async {
     String _result =
-    await FlutterSms.sendSMS(message: message, recipients: recipents);
+        await FlutterSms.sendSMS(message: message, recipients: recipents);
     //setState(() => _message = _result);
     print(_result);
   }
-
 }

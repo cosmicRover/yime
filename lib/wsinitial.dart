@@ -16,16 +16,14 @@ var scrollBool = true;
 int userId;
 int countOld;
 String talkingTo;
-bool scrolledOnce = false;
 bool chatActive = false;
 List<dynamic> texts = [];
-List<String> testString = [];
-List<int> testString2 = [];
+List<String> oldTexts = [];
+List<int> oldTextsId = [];
 AcCodeStorage saveKey = AcCodeStorage();
 
 class WebSocket extends StatefulWidget {
-
-  WebSocket(var x){
+  WebSocket(var x) {
     userId = x;
   }
 
@@ -119,8 +117,8 @@ class _WebSocketState extends State<WebSocket> {
         setState(() {
           talkingTo = dataResponse;
           chatActive = true;
-          testString = [];
-          testString2 = [];
+          oldTexts = [];
+          oldTextsId = [];
           texts = [];
         });
         print(talkingTo);
@@ -131,12 +129,12 @@ class _WebSocketState extends State<WebSocket> {
         setState(() {
           countOld = dataResponse['messages'].length;
           for (var i = 0; i < countOld; i++) {
-            testString.add(dataResponse['messages'][i]['message']);
-            testString2.add(dataResponse['messages'][i]['senderId']);
+            oldTexts.add(dataResponse['messages'][i]['message']);
+            oldTextsId.add(dataResponse['messages'][i]['senderId']);
           }
         });
         print('Texts are... $texts');
-        print(testString);
+        print(oldTexts);
         print(countOld);
       }
 
@@ -187,13 +185,16 @@ class _WebSocketState extends State<WebSocket> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Connection lost!"),
-            content: Text("Are you connected to the internet?"),
+            title: Text("Internet connection lost!"),
+            content: Text("Connection to partner lost"),
             //the actions of the alert dialogue
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
+                    setState(() {
+                      jsonResponse = "partnerLost";
+                    });
                   },
                   child: Text("Ok")),
             ],
@@ -201,13 +202,21 @@ class _WebSocketState extends State<WebSocket> {
         });
   }
 
+  void showErrMessage(String message, Color c) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      backgroundColor: c,
+      content: Text(message),
+      duration: Duration(milliseconds: 500),
+    ));
+  }
+
   ///The function that builds the conversations user had previously with this person
   ///Using Row, Expanded, Column, Container, SizedBox to display the texts
   Widget buildOldChatCards(BuildContext context) {
-    if (testString2 != null) {
+    if (oldTextsId != null) {
       List<Widget> list = new List<Widget>();
-      for (var i = 0; i < testString2.length; i++) {
-        if (testString2[i] != userId) {
+      for (var i = 0; i < oldTextsId.length; i++) {
+        if (oldTextsId[i] != userId) {
           list.add(Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -224,7 +233,7 @@ class _WebSocketState extends State<WebSocket> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          '${testString[i]}',
+                          '${oldTexts[i]}',
                           style: TextStyle(
                               color: Color.fromRGBO(255, 255, 255, 1.0)),
                         ),
@@ -235,7 +244,7 @@ class _WebSocketState extends State<WebSocket> {
               ))
             ],
           ));
-        } else if (testString2[i] == userId){
+        } else if (oldTextsId[i] == userId) {
           list.add(Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -252,7 +261,7 @@ class _WebSocketState extends State<WebSocket> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          '${testString[i]}',
+                          '${oldTexts[i]}',
                           style: TextStyle(color: Color.fromRGBO(4, 4, 4, 1.0)),
                         ),
                       ),
@@ -352,6 +361,7 @@ class _WebSocketState extends State<WebSocket> {
     ///authSuccess
     if (jsonResponse == ("authSuccess") || jsonResponse == ("partnerLost")) {
       return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text("Yime"),
         ),
@@ -373,7 +383,7 @@ class _WebSocketState extends State<WebSocket> {
                   padding: const EdgeInsets.only(
                       top: 8.0, left: 8.0, right: 8.0, bottom: 30.0),
                   child: Text(
-                    "Find new people from your community! We randomly connect you with another person to chat.",
+                    "Press connect to begin",
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
@@ -389,19 +399,28 @@ class _WebSocketState extends State<WebSocket> {
                       ),
                       color: Colors.yellow,
                       onPressed: () {
-                        var x = findPartner();
-                        channel.sink.add(x);
-                        setState(() {
-                          jsonResponse = "findingPrtner";
-                          scrollBool = true;
+                        checkConnection().then((onValue) {
+                          if (onValue == "connected") {
+                            var x = findPartner();
+                            channel.sink.add(x);
+                            setState(() {
+                              jsonResponse = "findingPrtner";
+                              scrollBool = true;
+                            });
+                          } else {
+                            setState(() {
+                              jsonResponse = "error!";
+                            });
+                          }
                         });
                       }),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 75.0),
-                  child: Image.asset(
-                    "pics/discover.png",
-                    scale: 1.5,
+                  child: Icon(
+                    Icons.forum,
+                    size: 200.0,
+                    color: Colors.black45,
                   ),
                 )
               ],
@@ -450,14 +469,14 @@ class _WebSocketState extends State<WebSocket> {
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text("Talking to $talkingTo"),
+          title: Text("$talkingTo"),
           actions: <Widget>[
             FlatButton.icon(
                 onPressed: () {
                   var x = sayBye();
                   channel.sink.add(x);
                   Navigator.pop(context);
-                  },
+                },
                 icon: Icon(Icons.directions_run),
                 label: Text("Leave"))
           ],
@@ -516,7 +535,6 @@ class _WebSocketState extends State<WebSocket> {
                               editingController.text = "";
                               toEnd();
                             } else {
-                              print("hiiiiiii");
                               displayDialogue();
                               toEnd();
                             }
@@ -585,13 +603,13 @@ class _WebSocketState extends State<WebSocket> {
             child: chatProcess(context)));
   }
 
-  ///Disposing the channel
+  ///Disposing the channel and setting variables to empty/false
   @override
   void dispose() {
     super.dispose();
     channel.sink.close();
-    testString = [];
-    testString2 = [];
+    oldTexts = [];
+    oldTextsId = [];
     texts = [];
     chatActive = false;
     editingController = null;

@@ -1,6 +1,7 @@
 import './mepage.dart';
 import './freenowpage.dart';
 import './friendspage.dart';
+import './discover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,7 @@ class BottomNavigationState extends State<BottomNavigation> {
   Me one;
   FreeNow two;
   Friends three;
+  Discover four;
 
   List<Widget> pages;
   //the widget will be connected to currentPage
@@ -32,8 +34,9 @@ class BottomNavigationState extends State<BottomNavigation> {
     one = Me();
     two = FreeNow();
     three = Friends();
+    four = Discover();
     //list pages will take the above values as arguments
-    pages = [one, two, three];
+    pages = [one, two, three, four];
     //current page is set to one so that app starts from home
     currentPage = two;
     //loadKey.getTokenPreference().then(upDateKey);//loading the accesskey from disk
@@ -43,53 +46,65 @@ class BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: Scaffold(
-          body: currentPage,
-          bottomNavigationBar: Theme(
-            data: ThemeData(
-              splashColor: Colors.yellow
-            ),
-            child: BottomNavigationBar(
-                //the color that the active icon will use
-                fixedColor: Colors.yellow[700],
-                currentIndex: currentTab,
-                onTap: (int index) {
-                  setState(() {
-                    currentTab = index;
-                    currentPage = pages[index];
-                  });
-                },
-                items: <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                      icon: Icon(
-                        Icons.person,
-                        //color: Colors.yellow[900],
-                      ),
-                      title: Text(
-                        "Me",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                  BottomNavigationBarItem(
-                      icon: Icon(
-                        Icons.free_breakfast,
-                        //color: Colors.yellow[900],
-                      ),
-                      title: Text(
-                        "Free now",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                  BottomNavigationBarItem(
-                      icon: Icon(
-                        Icons.people,
-                        //color: Colors.yellow[900],
-                      ),
-                      title: Text(
-                        "Friends",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                ]),
+      child: Scaffold(
+        body: currentPage,
+        bottomNavigationBar: Theme(
+          data: ThemeData(
+            splashColor: Colors.yellow,
           ),
+          child: BottomNavigationBar(
+              //the color that the active icon will use
+              fixedColor: Colors.yellow[700],
+              //if more than 3 items, declare type to be fixed
+              //otherwise fixed color will be ignored
+              type: BottomNavigationBarType.fixed,
+              currentIndex: currentTab,
+              onTap: (int index) {
+                setState(() {
+                  currentTab = index;
+                  currentPage = pages[index];
+                });
+              },
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.person,
+                      //color: Colors.yellow[900],
+                    ),
+                    title: Text(
+                      "Me",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.free_breakfast,
+                      //color: Colors.yellow[900],
+                    ),
+                    title: Text(
+                      "Free now",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.people,
+                      //color: Colors.yellow[900],
+                    ),
+                    title: Text(
+                      "Friends",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.chat_bubble,
+                      //color: Colors.yellow[900],
+                    ),
+                    title: Text(
+                      "Discover",
+                      style: TextStyle(color: Colors.black),
+                    )),
+              ]),
         ),
+      ),
     );
   }
 }
