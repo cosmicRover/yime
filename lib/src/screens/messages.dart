@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../colors/allcolors.dart';
+import 'drawer.dart';
 
 AppColors c = AppColors();
+DrawersElements drawers = DrawersElements();
 
 class Messages extends StatefulWidget {
   @override
@@ -18,21 +20,25 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
             height: 50.0,
             width: 4.0,
           ),
-          Container(
-              color: c.purple,
-              width: 300.0,
-              height: 49.83,
-              child: ListTile(
-                title: Text(
-                  "$userName",
-                  style: TextStyle(color: c.maxWhite),
-                ),
-                onTap: () {},
-                trailing: Text(
-                  "5",
-                  style: TextStyle(color: c.maxWhite),
-                ),
-              ))
+          //FractionallySized box detects the height and weight of the view
+          FractionallySizedBox(
+            widthFactor: 0.9,
+            child: Container(
+                color: c.purple,
+                //width: 331.0,
+                height: 49.83,
+                child: ListTile(
+                  title: Text(
+                    "$userName",
+                    style: TextStyle(color: c.maxWhite),
+                  ),
+                  onTap: () {},
+                  trailing: Text(
+                    "5",
+                    style: TextStyle(color: c.maxWhite),
+                  ),
+                )),
+          )
         ],
       );
     } else {
@@ -43,18 +49,21 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
             height: 50.0,
             width: 4.0,
           ),
-          Container(
-              color: c.maxWhite,
-              width: 300.0,
-              height: 49.83,
-              child: ListTile(
-                title: Text(
-                  "$userName",
-                  style: TextStyle(color: c.lightBlack),
-                ),
-                onTap: () {},
-                //trailing: Text("5", style: TextStyle(color: Colors.white),),
-              ))
+          FractionallySizedBox(
+            widthFactor: 0.9,
+            child: Container(
+                color: c.maxWhite,
+                width: 300.0,
+                height: 49.83,
+                child: ListTile(
+                  title: Text(
+                    "$userName",
+                    style: TextStyle(color: c.lightBlack),
+                  ),
+                  onTap: () {},
+                  //trailing: Text("5", style: TextStyle(color: Colors.white),),
+                )),
+          )
         ],
       );
     }
@@ -68,21 +77,24 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
             height: 50.0,
             width: 4.0,
           ),
-          Container(
-              color: c.purple,
-              width: 300.0,
-              height: 49.83,
-              child: ListTile(
-                title: Text(
-                  "$userName",
-                  style: TextStyle(color: c.maxWhite),
-                ),
-                onTap: () {},
-                trailing: Text(
-                  "5",
-                  style: TextStyle(color: c.maxWhite),
-                ),
-              ))
+          FractionallySizedBox(
+            widthFactor: 0.9,
+            child: Container(
+                color: c.purple,
+                width: 300.0,
+                height: 49.83,
+                child: ListTile(
+                  title: Text(
+                    "$userName",
+                    style: TextStyle(color: c.maxWhite),
+                  ),
+                  onTap: () {},
+                  trailing: Text(
+                    "5",
+                    style: TextStyle(color: c.maxWhite),
+                  ),
+                )),
+          )
         ],
       );
     } else {
@@ -93,18 +105,21 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
             height: 50.0,
             width: 4.0,
           ),
-          Container(
-              color: c.maxWhite,
-              width: 300.0,
-              height: 49.83,
-              child: ListTile(
-                title: Text(
-                  "$userName",
-                  style: TextStyle(color: c.lightBlack),
-                ),
-                onTap: () {},
-                //trailing: Text("5", style: TextStyle(color: Colors.white),),
-              ))
+          FractionallySizedBox(
+            widthFactor: 0.9,
+            child: Container(
+                color: c.maxWhite,
+                width: 300.0,
+                height: 49.83,
+                child: ListTile(
+                  title: Text(
+                    "$userName",
+                    style: TextStyle(color: c.lightBlack),
+                  ),
+                  onTap: () {},
+                  //trailing: Text("5", style: TextStyle(color: Colors.white),),
+                )),
+          )
         ],
       );
     }
@@ -122,16 +137,17 @@ class _MessagesState extends State<Messages> {
             title: Text("Messages",),
             backgroundColor: c.purple,
           ),
+          drawer: drawers.buildDrawers(context),
           body: Padding(
             padding: const EdgeInsets.only(top: 22.0),
             //if snapshot is empty say you didn't talk to anyone
             child: ListView.builder(
-                itemCount: 2,
+                itemCount: 5,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 6.17),
                     child: Column(
-                      children: <Widget>[messageList(true, "Joy Paul", false)],
+                      children: <Widget>[messageList(true, "Joy Paul", true)],
                     ),
                   );
                 }),

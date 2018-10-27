@@ -22,7 +22,7 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.only(top: 46.0),
                 child: Text(
-                  "Yime",
+                  "YIME",
                   style: TextStyle(fontSize: 57.0),
                   textAlign: TextAlign.center,
                 ),
@@ -30,14 +30,18 @@ class _LoginState extends State<Login> {
               Text(
                 "make new friends",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.0),
+                style: TextStyle(fontSize: 12.0, color: c.darkerGrey),
               ),
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 77.0, right: 77.0, top: 45.0),
-                child: Text(
-                  "anonymously chat with new people on campus",
-                  style: TextStyle(fontSize: 20.0),
+                    const EdgeInsets.only(top: 45.0),
+                child: FractionallySizedBox(
+                  widthFactor: .6,
+                  child: Text(
+                    "anonymously chat with new people on campus",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20.0),
+                  ),
                 ),
               ),
               Padding(

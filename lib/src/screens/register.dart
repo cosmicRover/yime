@@ -22,7 +22,7 @@ class _RegisterState extends State<Register> {
               Padding(
                 padding: const EdgeInsets.only(top: 46.0),
                 child: Text(
-                  "Yime",
+                  "YIME",
                   style: TextStyle(fontSize: 57.0),
                   textAlign: TextAlign.center,
                 ),
@@ -30,7 +30,7 @@ class _RegisterState extends State<Register> {
               Text(
                 "make new friends",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.0),
+                style: TextStyle(fontSize: 12.0, color: c.darkerGrey),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 41.0, bottom: 41.0),
@@ -39,7 +39,7 @@ class _RegisterState extends State<Register> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 22.0,
-                      color: Color.fromRGBO(125, 125, 125, 100.0)),
+                      color: c.darkerGrey2),
                 ),
               ),
               Padding(

@@ -3,7 +3,7 @@ import '../colors/allcolors.dart';
 
 TextEditingController editingController = TextEditingController();
 AppColors c = AppColors();
-enum BlockPoint { blockValue}
+enum BlockPoint { blockValue }
 
 //TODO needs a way to have the texts appear from the bottom and maybe a border around input box
 Widget chatCardSample() {
@@ -34,74 +34,94 @@ Widget chatCardSample() {
   );
 }
 
-void blockHim(){
+void blockHim() {
   print("Blocked");
 }
 
-Widget chatScreen() {
+Widget chatScreen(BuildContext context) {
   return Material(
-    child: Scaffold(
-      appBar: AppBar(
-        title: Text("Cody Johnson"),
-        backgroundColor: c.darkGrey,
-        leading: Container(
-            color: c.red,
-            height: 52.0,
-            width: 46.0,
-            child: IconButton(
-                icon: Icon(Icons.keyboard_backspace), onPressed: () {})),
-        actions: <Widget>[
-          //takes enum values
-          PopupMenuButton<BlockPoint>(
-            onSelected: (BlockPoint result){
-              blockHim();
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<BlockPoint>>[
-              PopupMenuItem(
-                value: BlockPoint.blockValue,
-                child: Text('Block'),
+    child: Theme(
+      data: ThemeData(canvasColor: c.lightGrey),
+      child: Scaffold(
+        appBar: AppBar(
+          title: RichText(
+              text: TextSpan(
+                text: "Cody Johnson",
+                style: TextStyle(fontSize: 22.0),
+                children: <TextSpan>[
+                  TextSpan(text: "   offline", style: TextStyle(fontSize: 12.0))
+                ]
               ),
-            ],
-          )
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: Material(
-              color: c.lightGrey,
-              child: ListView(
-
-                  ///the actual chat blocks go here
-                  ),
-            ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Container(
-              color: c.maxWhite,
-              padding: EdgeInsets.symmetric(horizontal: 9.0),
-              child: Row(
-                children: <Widget>[
-                  Flexible(
-                      child: TextField(
-                    controller: editingController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Type here',
+          backgroundColor: c.darkGrey,
+          leading: Container(
+              color: c.red,
+              height: 52.0,
+              width: 46.0,
+              child: IconButton(
+                  icon: Icon(Icons.keyboard_backspace), onPressed: () {})),
+          actions: <Widget>[
+            //takes enum values
+            PopupMenuButton<BlockPoint>(
+              onSelected: (BlockPoint result) {
+                blockHim();
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<BlockPoint>>[
+                    PopupMenuItem(
+                      value: BlockPoint.blockValue,
+                      child: Text('Block'),
                     ),
-                  )),
-                  IconButton(
-                      icon: Icon(
-                        Icons.send,
-                      ),
-                      onPressed: null),
-                ],
+                  ],
+            )
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: Material(
+                color: c.lightGrey,
+                child: ListView(
+
+                    ///the actual chat blocks go here
+                    ),
               ),
             ),
-          ),
-        ],
+            Padding(
+              ///color right outside of rectangle needs changing
+              padding: const EdgeInsets.all(5.0),
+              child: Container(
+                decoration: ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: c.lighterGrey),
+                      borderRadius: BorderRadius.circular(0.0),
+                    ),
+                    color: c.maxWhite),
+                //color: c.maxWhite,
+                padding: EdgeInsets.symmetric(horizontal: 9.0),
+                child: Row(
+                  children: <Widget>[
+                    Flexible(
+                        child: TextField(
+                      controller: editingController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Type here',
+                      ),
+                    )),
+                    IconButton(
+                        icon: Icon(
+                          Icons.send,
+                        ),
+
+                        ///change color if controller has text
+                        onPressed: null),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -115,6 +135,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
-    return chatScreen();
+    return chatScreen(context);
   }
 }
