@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../colors/allcolors.dart';
 
 AppColors c = AppColors();
@@ -33,8 +34,7 @@ class _LoginState extends State<Login> {
                 style: TextStyle(fontSize: 12.0, color: c.darkerGrey),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.only(top: 45.0),
+                padding: const EdgeInsets.only(top: 45.0),
                 child: FractionallySizedBox(
                   widthFactor: .6,
                   child: Text(
@@ -62,7 +62,7 @@ class _LoginState extends State<Login> {
                         color: c.maxWhite),
                     child: FlatButton.icon(
                         onPressed: () {},
-                        icon: Image.asset("pics/google.png",),
+                        icon: Image.asset("icons/google.png"),
                         label: Text("Google")),
                   ),
                 ],
@@ -80,7 +80,7 @@ class _LoginState extends State<Login> {
                           color: c.maxWhite),
                       child: FlatButton.icon(
                           onPressed: () {},
-                          icon: Image.asset("pics/snapchat.png"),
+                          icon: Image.asset("icons/snapchat.png"),
                           label: Text("Snapchat")),
                     ),
                   ],
@@ -99,7 +99,7 @@ class _LoginState extends State<Login> {
                           color: c.maxWhite),
                       child: FlatButton.icon(
                           onPressed: () {},
-                          icon: Image.asset("pics/facebook.png"),
+                          icon: Image.asset("icons/facebook.png"),
                           label: Text("Facebook")),
                     ),
                   ],

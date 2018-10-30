@@ -134,7 +134,9 @@ class _MessagesState extends State<Messages> {
         data: ThemeData(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Messages",),
+            title: Text(
+              "Messages",
+            ),
             backgroundColor: c.purple,
           ),
           drawer: drawers.buildDrawers(context),
@@ -142,7 +144,7 @@ class _MessagesState extends State<Messages> {
             padding: const EdgeInsets.only(top: 22.0),
             //if snapshot is empty say you didn't talk to anyone
             child: ListView.builder(
-                itemCount: 5,
+                itemCount: 15,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 6.17),
@@ -152,28 +154,13 @@ class _MessagesState extends State<Messages> {
                   );
                 }),
           ),
-          bottomNavigationBar: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 51.17),
-                child: Container(
-                  width: 179.0,
-                  height: 49.83,
-                  decoration: ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(46.0)),
-                      color: c.purple),
-                  child: FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        "FIND NEW 0/5",
-                        style: TextStyle(color: c.maxWhite),
-                      )),
-                ),
-              ),
-            ],
-          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton.extended(
+              onPressed: (){},
+              icon: Icon(Icons.people),
+              backgroundColor: c.purple,
+              label: Text("FIND NEW 0/5", style: TextStyle(color: c.maxWhite),)),
         ),
       ),
     );

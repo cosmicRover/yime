@@ -34,7 +34,7 @@ Widget chatCardSample() {
   );
 }
 
-void blockHim() {
+void blockUser() {
   print("Blocked");
 }
 
@@ -64,7 +64,7 @@ Widget chatScreen(BuildContext context) {
             //takes enum values
             PopupMenuButton<BlockPoint>(
               onSelected: (BlockPoint result) {
-                blockHim();
+                blockUser();
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<BlockPoint>>[
                     PopupMenuItem(
