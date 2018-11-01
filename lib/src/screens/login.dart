@@ -62,7 +62,7 @@ class _LoginState extends State<Login> {
                         color: c.maxWhite),
                     child: FlatButton.icon(
                         onPressed: () {},
-                        icon: Image.asset("icons/google.png"),
+                        icon: Icon(Icons.ac_unit),
                         label: Text("Google")),
                   ),
                 ],

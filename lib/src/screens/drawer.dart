@@ -11,7 +11,7 @@ Padding textPadding = Padding(padding: EdgeInsets.only(left: 16.0, ));
 Divider tileDivider = Divider(color: c.deepPurple2, height: 0.0,);
 
 class DrawersElements {
-  Widget buildDrawers(BuildContext context) {
+  Widget buildDrawers(BuildContext context){
     return Drawer(
       child: Container(
         color: c.deepPurple,

@@ -126,6 +126,11 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
   }
 }
 
+//and empty
+Widget emptyWidget(){
+  return Text("");
+}
+
 class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
@@ -133,13 +138,6 @@ class _MessagesState extends State<Messages> {
       child: Theme(
         data: ThemeData(),
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Messages",
-            ),
-            backgroundColor: c.purple,
-          ),
-          drawer: drawers.buildDrawers(context),
           body: Padding(
             padding: const EdgeInsets.only(top: 22.0),
             //if snapshot is empty say you didn't talk to anyone
@@ -149,7 +147,7 @@ class _MessagesState extends State<Messages> {
                   return Padding(
                     padding: const EdgeInsets.only(top: 6.17),
                     child: Column(
-                      children: <Widget>[messageList(true, "Joy Paul", true)],
+                      children: <Widget>[messageList(false, "Joy Paul", true)],
                     ),
                   );
                 }),
@@ -158,9 +156,9 @@ class _MessagesState extends State<Messages> {
               FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton.extended(
               onPressed: (){},
-              icon: Icon(Icons.people),
-              backgroundColor: c.purple,
-              label: Text("FIND NEW 0/5", style: TextStyle(color: c.maxWhite),)),
+              icon: emptyWidget(),
+              backgroundColor: c.lightBlack,
+              label: Text("FIND NEW 0/5 ", style: TextStyle(color: c.maxWhite),)),
         ),
       ),
     );
