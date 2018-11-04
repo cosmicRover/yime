@@ -16,7 +16,7 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int currentTab = 0;
+  int currentTab = 1;
   Messages one;
   Clubs two;
 
@@ -28,7 +28,7 @@ class _BottomNavState extends State<BottomNav> {
     one = Messages();
     two = Clubs();
     pages = [one, two];
-    currentPage = one;
+    currentPage = two;
     super.initState();
   }
 

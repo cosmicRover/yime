@@ -58,7 +58,7 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
                 child: ListTile(
                   title: Text(
                     "$userName",
-                    style: TextStyle(color: c.lightBlack),
+                    style: TextStyle(color: c.black),
                   ),
                   onTap: () {},
                   //trailing: Text("5", style: TextStyle(color: Colors.white),),
@@ -114,7 +114,7 @@ Widget messageList(bool online, var userName, bool hasUnreadMessage) {
                 child: ListTile(
                   title: Text(
                     "$userName",
-                    style: TextStyle(color: c.lightBlack),
+                    style: TextStyle(color: c.black),
                   ),
                   onTap: () {},
                   //trailing: Text("5", style: TextStyle(color: Colors.white),),
@@ -157,7 +157,7 @@ class _MessagesState extends State<Messages> {
           floatingActionButton: FloatingActionButton.extended(
               onPressed: (){},
               icon: emptyWidget(),
-              backgroundColor: c.lightBlack,
+              backgroundColor: c.black,
               label: Text("FIND NEW 0/5 ", style: TextStyle(color: c.maxWhite),)),
         ),
       ),
