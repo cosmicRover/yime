@@ -9,6 +9,8 @@ import './src/screens/login.dart';
 import './src/screens/register.dart';
 import './src/screens/messages.dart';
 import './src/screens/chatscreen.dart';
+import './src/screens/bottomnav.dart';
+import './src/screens/clubs.dart';
 
 void main() => runApp(Yime());
 
@@ -26,7 +28,7 @@ class _YimeState extends State<Yime> {
         '/bottomnav': (context) => BottomNavigation(),
         '/freenow': (context) => FreeNow(),
       },
-      home: ChatScreen(),
+      home: BottomNav(),
       //disabling the debug banner
       debugShowCheckedModeBanner: false,
     );
