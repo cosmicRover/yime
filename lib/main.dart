@@ -5,13 +5,6 @@ import './pages/intropage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import './src/screens/login.dart';
-import './src/screens/register.dart';
-import './src/screens/messages.dart';
-import './src/screens/chatscreen.dart';
-import './src/screens/bottomnav.dart';
-import './src/screens/clubs.dart';
-
 void main() => runApp(Yime());
 
 class Yime extends StatefulWidget {
@@ -28,7 +21,7 @@ class _YimeState extends State<Yime> {
         '/bottomnav': (context) => BottomNavigation(),
         '/freenow': (context) => FreeNow(),
       },
-      home: BottomNav(),
+      home: IntroPage(),
       //disabling the debug banner
       debugShowCheckedModeBanner: false,
     );
