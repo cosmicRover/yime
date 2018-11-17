@@ -1,7 +1,7 @@
 import './mepage.dart';
 import './freenowpage.dart';
 import './friendspage.dart';
-import './discover.dart';
+//import './discover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +21,6 @@ class BottomNavigationState extends State<BottomNavigation> {
   Me one;
   FreeNow two;
   Friends three;
-  Discover four;
 
   List<Widget> pages;
   //the widget will be connected to currentPage
@@ -34,9 +33,8 @@ class BottomNavigationState extends State<BottomNavigation> {
     one = Me();
     two = FreeNow();
     three = Friends();
-    four = Discover();
     //list pages will take the above values as arguments
-    pages = [one, two, three, four];
+    pages = [one, two, three];
     //current page is set to one so that app starts from home
     currentPage = two;
     //loadKey.getTokenPreference().then(upDateKey);//loading the accesskey from disk
@@ -91,15 +89,6 @@ class BottomNavigationState extends State<BottomNavigation> {
                     ),
                     title: Text(
                       "Friends",
-                      style: TextStyle(color: Colors.black),
-                    )),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.chat_bubble,
-                      //color: Colors.yellow[900],
-                    ),
-                    title: Text(
-                      "Discover",
                       style: TextStyle(color: Colors.black),
                     )),
               ]),

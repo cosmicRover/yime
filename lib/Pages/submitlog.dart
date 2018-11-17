@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -113,21 +112,4 @@ class EnterCodeLoginService {
   }
 }
 
-//this class saves and loads the access key
-class SaveLoadAccessToken {
-  //set string method
-  Future<bool> savedTokenPreference(accessToken) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("accesstoken", accessToken);
-    print("accesstoken save called");
-    return true;
-  }
 
-  //get string
-  Future<String> getTokenPreference() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String accessToken = prefs.get("accesstoken");
-    print("accesstoken retrive called");
-    return accessToken;
-  }
-}

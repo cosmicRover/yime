@@ -4,7 +4,7 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 import 'dart:async';
 import 'dart:convert';
 
-import './wsinitial.dart';
+import './discoverws.dart';
 import './saveaccesscode.dart';
 
 class Discover extends StatefulWidget {
