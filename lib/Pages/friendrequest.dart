@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_sms/flutter_sms.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 var phoneNumber;
 String accessToken;
@@ -109,7 +109,7 @@ class _FriendRequestState extends State<FriendRequest> {
                                     '{userExists: false}') {
                                   displayDialogue();
                                 } else {
-                                  if (onValue['message'] == "null") {
+                                  if (onValue['message'] == null) {
                                     showErrMessage("Sent!", Colors.black);
                                   } else {
                                     showErrMessage(
@@ -144,8 +144,7 @@ class _FriendRequestState extends State<FriendRequest> {
               FlatButton(
                   //on pressed sends text
                   onPressed: () {
-                    _sendSMS("Hey! Won't you join me on yime.app ?",
-                        ["$phoneNumber"]);
+                    launchSMS(phoneNumber);
                     Navigator.pop(context);
                   },
                   child: Text("Yes")),
@@ -159,11 +158,9 @@ class _FriendRequestState extends State<FriendRequest> {
         });
   }
 
-  //sends text!
-  Future<dynamic> _sendSMS(String message, List<String> recipents) async {
-    String _result =
-        await FlutterSms.sendSMS(message: message, recipients: recipents);
-    //setState(() => _message = _result);
-    print(_result);
+  //launches sms app
+  launchSMS(var y) async {
+    var url = 'sms:$y';
+    await launch(url);
   }
 }
